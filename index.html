@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--  ====== Link Icon ===== -->
+    <link rel="Icon" href="img/favicon/favicon-16x16.png">
+    <!--  ====== Link CSS ======  -->
+    <link rel="stylesheet" href="style.css">
+    <title>Pokedex</title>
+</head>
+<body>
+    <!--pokedex-->
+    <div id="pokedex">
+
+        <!--  Top  -->
+        <div id="top">
+
+            <!--  Top Bar  -->
+            <div id="top-bar">
+                <input 
+                    type="text"
+                    id="search"
+                    value="bulbasaur"
+                >
+                <span id="number">
+                    #001
+                </span>
+            </div>
+            <!--  Pokemon Image Placeholder  -->
+            <div id="poke-image-placeholder">
+
+                <img src="img/defautImage.png" id="pokemon-image" alt="pokemon-image">
+            
+            </div>
+        </div>
+
+        <!-- Data part-->
+        <div id="data">
+            
+            <!--  Types  -->
+            <div id="types">
+                <span 
+                    style="background-color: rgba(116, 203,  72);"
+                    class="type"
+                >
+                    grass
+                </span>
+                <span 
+                    style="background-color: rgba(164,  62, 158);"
+                    class="type"
+                >
+                    poison
+                </span>
+            </div>
+            
+            <!--  Title  -->
+            <h4 style="color: rgba(116, 203,  72);">base stats</h4>
+           
+            <!--  Status (description, number & bar)-->
+            <div id="stats">
+                
+                <!--  Status's row 1  -->
+                <div class="stat-row">
+                    <div class="stat-desc">HP</div>
+                    <div class="stat-number">045</div>
+                    <div class="stat-bar">
+                        <div class="bar-outer">
+                            <div class="bar-inner" style="width: 45%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--  Status's row 2  -->
+                <div class="stat-row">
+                    <div class="stat-desc">ATK</div>
+                    <div class="stat-number">049</div>
+                    <div class="stat-bar">
+                        <div class="bar-outer">
+                            <div class="bar-inner" style="width: 49%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--  Status's row 3  -->
+                <div class="stat-row">
+                    <div class="stat-desc">DEF</div>
+                    <div class="stat-number">049</div>
+                    <div class="stat-bar">
+                        <div class="bar-outer">
+                            <div class="bar-inner" style="width: 49%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--  Status's row 4  -->
+                <div class="stat-row">
+                    <div class="stat-desc">SATK</div>
+                    <div class="stat-number">065</div>
+                    <div class="stat-bar">
+                        <div class="bar-outer">
+                            <div class="bar-inner" style="width: 65%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--  Status's row 5  -->
+                <div class="stat-row">
+                    <div class="stat-desc">SDEF</div>
+                    <div class="stat-number">065</div>
+                    <div class="stat-bar">
+                        <div class="bar-outer">
+                            <div class="bar-inner" style="width: 65%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--  Status's row 6  -->
+                <div class="stat-row">
+                    <div class="stat-desc">SPD</div>
+                    <div class="stat-number">045</div>
+                    <div class="stat-bar">
+                        <div class="bar-outer">
+                            <div class="bar-inner" style="width: 65%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
