@@ -10,15 +10,12 @@
     <link rel="stylesheet" href="style.css">
     <title>Pokedex</title>
 </head>
+
 <body>
-    <!--pokedex-->
     <div id="pokedex">
-
-        <!--  Top  -->
         <div id="top">
-
-            <!--  Top Bar  -->
             <div id="top-bar">
+
                 <input 
                     type="text"
                     id="search"
@@ -27,20 +24,18 @@
                 <span id="number">
                     #001
                 </span>
+            
             </div>
-            <!--  Pokemon Image Placeholder  -->
             <div id="poke-image-placeholder">
 
                 <img src="img/defautImage.png" id="pokemon-image" alt="pokemon-image">
             
             </div>
+        
         </div>
-
-        <!-- Data part-->
-        <div id="data">
-            
-            <!--  Types  -->
+        <div id="data">            
             <div id="types">
+                
                 <span 
                     style="background-color: rgba(116, 203,  72);"
                     class="type"
@@ -54,11 +49,7 @@
                     poison
                 </span>
             </div>
-            
-            <!--  Title  -->
-            <h4 style="color: rgba(116, 203,  72);">base stats</h4>
-           
-            <!--  Status (description, number & bar)-->
+            <h4 id="base-stat" style="color: rgba(116, 203,  72);">base stats</h4>
             <div id="stats">
                 
                 <!--  Status's row 1  -->
@@ -127,9 +118,9 @@
                     </div>
                 </div>
             </div>
-        </div>
-        
+        </div>   
     </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
