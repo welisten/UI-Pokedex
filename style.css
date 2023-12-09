@@ -138,6 +138,7 @@ body
     gap: 0.5rem;
     font-size: 0.8rem;
     cursor: default;
+
 }
 
 .stat-row
@@ -215,13 +216,49 @@ body
     padding: 0.5rem 1rem;
     border-radius: 50%;
     color: #fff;
-    transition: scale 0.5s ease-in-out ;
+    transition: scale 0.5s ease-in-out;
 
 }
 
 #controlers .controlers-btn:active{
     transform: scale(1.1);
-    transition: scale 0.5s ease-in-out ;
-
+    transition: scale 0.5s ease-in-out;
 }
 
+/* ================       Midia Query        ===============*/
+
+@media(max-width: 470px) {
+    #pokedex{
+        width: 16rem;
+        height: 28rem;
+    }
+    #data{
+        padding-top: 4rem;
+    }
+
+    #pokemon-image
+    {   
+        width: 160px;
+        height: 160px;
+        transform: translateY(2rem);
+
+    }
+
+    #base-stat
+    {
+        margin: .5rem 0;
+    }
+    #controlers
+    {
+        width:20.7rem;
+        height: 2rem;
+        padding: 0 0.5rem;
+    }
+    #controlers .controlers-btn
+    {
+        cursor: pointer;
+        background-color: white;
+        padding: 0 0.5rem;
+        border-radius: 50%;
+    }
+}
