@@ -15,7 +15,7 @@ body
     margin: 0;    
     background-color: #d6d6d6;
 }
-
+/* ================       Pokedex        ===============*/
 #pokedex
 {
     width: 22rem;
@@ -46,7 +46,8 @@ body
     width: 100%;
 }
 
-.searchBar{
+.searchBar
+{
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -58,9 +59,10 @@ body
 }
 
 
+
 #search
 {   
-    width: 70%;
+    width: 90%;
     color: #fff;
     background:none;
     border: none;
@@ -123,7 +125,8 @@ body
     cursor:default;
 }
 
-#base-stat{
+#base-stat
+{
     text-align: center;
     text-transform: capitalize; 
     transition: color 0.5s ease-in-out;   
@@ -137,7 +140,8 @@ body
     cursor: default;
 }
 
-.stat-row{
+.stat-row
+{
     display: flex;
 }
 
@@ -187,3 +191,37 @@ body
     border-radius: 4px;
     transition:  0.5s ease-in-out ;
 }
+
+/* ================       Controlers        ===============*/
+
+#controlers
+{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width:29rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transform: translate(-50%, -50%);
+}
+
+#controlers .controlers-btn
+{
+    cursor: pointer;
+    background-color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 50%;
+    color: #fff;
+    transition: scale 0.5s ease-in-out ;
+
+}
+
+#controlers .controlers-btn:active{
+    transform: scale(1.1);
+    transition: scale 0.5s ease-in-out ;
+
+}
+

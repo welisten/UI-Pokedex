@@ -8,7 +8,11 @@ const statDescEl       = document.querySelectorAll('.stat-desc')
 const statNumberEl     = document.querySelectorAll('.stat-number')
 const statInneBarEl    = document.querySelectorAll('.bar-inner')
 const statOuterBarEl   = document.querySelectorAll('.bar-outer')
+const controlersBtnEl  = document.querySelectorAll('.controlers-btn')
+const btnPrevEl        = document.querySelector('.btnPrev')
+const btnNextEl        = document.querySelector('.btnNext')
 
+let currentPokemonId = 1
 
 const typesColor = {
     "rock":     [182, 158,  49],
@@ -48,7 +52,6 @@ const fetchAPI = async (pokemonName) => {
 
 searchEl.addEventListener("change", async (event) => {
      const pokemonName = event.target.value
-    
      // 1 - buscar valor na api
     const pokemonData = await fetchAPI(pokemonName)
     if(!pokemonData) {// validation when pokemon does not exist
@@ -62,6 +65,7 @@ searchEl.addEventListener("change", async (event) => {
    
     // 2 - Atualizar pkmIdNumberEl
     pkmIdNumberEl.innerHTML = '#' + pokemonData.id.toString().padStart(3, '0')
+    currentPokemonId = pokemonData.id
 
     // 3 - Atualizar pkmImageEl
     pkmImageEl.src = pokemonData.sprites.other.home.front_default
@@ -89,4 +93,31 @@ searchEl.addEventListener("change", async (event) => {
         statDescEl[i].style.color               = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]})` 
         
     })
+     //Atualizar botoes de controle
+      controlersBtnEl.forEach((btn, i ) => {
+        btn.style.backgroundColor = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]})`
+        
+    })
 })
+
+btnPrevEl.addEventListener('click', async (e) => {
+        if(currentPokemonId !== 1){
+            --currentPokemonId
+            const pokemonData = await fetchAPI(currentPokemonId.toString())
+            const eventoChange = new Event('change')
+            searchEl.value =  pokemonData.name
+            searchEl.dispatchEvent(eventoChange)
+        }
+    }
+)
+btnNextEl.addEventListener('click', async (e) => {
+        if(currentPokemonId < 906){
+            ++currentPokemonId
+            const pokemonData = await fetchAPI(currentPokemonId.toString())
+            const eventoChange = new Event('change');
+            searchEl.value =  pokemonData.name
+            searchEl.dispatchEvent(eventoChange)
+            
+        }
+    }
+)
