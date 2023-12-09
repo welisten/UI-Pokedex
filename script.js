@@ -34,7 +34,7 @@ const typesColor = {
 
 const fetchAPI = async (pokemonName) => {
     // Joing pokemon names that has more than one word
-    pokemonNameApi = pokemonName.split(' ').join('-')
+    const pokemonNameApi = pokemonName.split(' ').join('-')
 
     const response    = await fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonNameApi)
     
@@ -44,7 +44,6 @@ const fetchAPI = async (pokemonName) => {
     }
 
     return false
-    
 }
 
 searchEl.addEventListener("change", async (event) => {
