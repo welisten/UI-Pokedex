@@ -9,6 +9,7 @@ const statNumberEl     = document.querySelectorAll('.stat-number')
 const statInneBarEl    = document.querySelectorAll('.bar-inner')
 const statOuterBarEl   = document.querySelectorAll('.bar-outer')
 const controlersBtnEl  = document.querySelectorAll('.controlers-btn')
+const ballonsInstrucEl = document.querySelectorAll('.ballon-instruc')
 const btnPrevEl        = document.querySelector('.btnPrev')
 const btnNextEl        = document.querySelector('.btnNext')
 
@@ -51,7 +52,7 @@ const fetchAPI = async (pokemonName) => {
 }
 
 searchEl.addEventListener("change", async (event) => {
-     const pokemonName = event.target.value
+     const pokemonName = event.target.value.toLowerCase()
      // 1 - buscar valor na api
     const pokemonData = await fetchAPI(pokemonName)
     if(!pokemonData) {// validation when pokemon does not exist
@@ -96,6 +97,11 @@ searchEl.addEventListener("change", async (event) => {
      //Atualizar botoes de controle
       controlersBtnEl.forEach((btn, i ) => {
         btn.style.backgroundColor = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]})`
+        
+    })
+     //Atualizar balões de intruções
+      ballonsInstrucEl.forEach((ballon, i ) => {
+        ballon.style.backgroundColor = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]}, 0.589)`
         
     })
 })

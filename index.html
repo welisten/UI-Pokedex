@@ -14,128 +14,148 @@
 </head>
 
 <body>
-    <div id="pokedex">
-        <div id="top">
-            <div id="top-bar">
-                <div class="searchBar">
-                    <input 
-                    type="text"
-                    id="search"
-                    value="bulbasaur"
-                >
-                <i class="fa-solid fa-magnifying-glass"></i>
-                </div>
-                
-                <span id="number">
-                    #001
-                </span>
-            
-            </div>
-            <div id="poke-image-placeholder">
-
-                <img src="img/defautImage.png" id="pokemon-image" alt="pokemon-image">
-            
-            </div>
-        
+    <aside class="instructions">
+        <div class="ballon-instruc">
+            <a href="#" class="btn ballon-instruct-btn">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
+            <p>Procure pelo pokemon desejado na barra de pesquisas</p>
         </div>
-        <div id="data">            
-            <div id="types">
+
+        <div class="ballon-instruc">
+            <a href="#" class="btn ballon-instruct-btn">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
+            <p>Voce também pode pesquisar através do número de identificação do pokemon</p>
+        </div>
+    </aside>
+    <aside class="information"></aside>
+
+    <main>
+        <div id="pokedex">
+            <div id="top">
+                <div id="top-bar">
+                    <div class="searchBar">
+                        <input 
+                        type="text"
+                        id="search"
+                        value="bulbasaur"
+                    >
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    
+                    <span id="number">
+                        #001
+                    </span>
                 
-                <span 
+                </div>
+                <div id="poke-image-placeholder">
+    
+                    <img src="img/defautImage.png" id="pokemon-image" alt="pokemon-image">
+                
+                </div>
+            
+            </div>
+            <div id="data">            
+                <div id="types">
+                    
+                    <span 
+                        style="background-color: rgba(116, 203,  72);"
+                        class="type"
+                    >
+                        grass
+                    </span>
+                    <span 
+                        style="background-color: rgba(164,  62, 158);"
+                        class="type"
+                    >
+                        poison
+                    </span>
+                </div>
+                <h4 id="base-stat" style="color: rgba(116, 203,  72);">base stats</h4>
+                <div id="stats">
+                    <!--  Status's row 1  -->
+                    <div class="stat-row">
+                        <div class="stat-desc">HP</div>
+                        <div class="stat-number">045</div>
+                        <div class="stat-bar">
+                            <div class="bar-outer">
+                                <div class="bar-inner" style="width: 45%;"></div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!--  Status's row 2  -->
+                    <div class="stat-row">
+                        <div class="stat-desc">ATK</div>
+                        <div class="stat-number">049</div>
+                        <div class="stat-bar">
+                            <div class="bar-outer">
+                                <div class="bar-inner" style="width: 49%;"></div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!--  Status's row 3  -->
+                    <div class="stat-row">
+                        <div class="stat-desc">DEF</div>
+                        <div class="stat-number">049</div>
+                        <div class="stat-bar">
+                            <div class="bar-outer">
+                                <div class="bar-inner" style="width: 49%;"></div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!--  Status's row 4  -->
+                    <div class="stat-row">
+                        <div class="stat-desc">SATK</div>
+                        <div class="stat-number">065</div>
+                        <div class="stat-bar">
+                            <div class="bar-outer">
+                                <div class="bar-inner" style="width: 65%;"></div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!--  Status's row 5  -->
+                    <div class="stat-row">
+                        <div class="stat-desc">SDEF</div>
+                        <div class="stat-number">065</div>
+                        <div class="stat-bar">
+                            <div class="bar-outer">
+                                <div class="bar-inner" style="width: 65%;"></div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!--  Status's row 6  -->
+                    <div class="stat-row">
+                        <div class="stat-desc">SPD</div>
+                        <div class="stat-number">045</div>
+                        <div class="stat-bar">
+                            <div class="bar-outer">
+                                <div class="bar-inner" style="width: 65%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+        </div>
+        <div id="controlers">
+            <span   class="controlers-btn btnPrev"
                     style="background-color: rgba(116, 203,  72);"
-                    class="type"
-                >
-                    grass
-                </span>
-                <span 
-                    style="background-color: rgba(164,  62, 158);"
-                    class="type"
-                >
-                    poison
-                </span>
-            </div>
-            <h4 id="base-stat" style="color: rgba(116, 203,  72);">base stats</h4>
-            <div id="stats">
-                <!--  Status's row 1  -->
-                <div class="stat-row">
-                    <div class="stat-desc">HP</div>
-                    <div class="stat-number">045</div>
-                    <div class="stat-bar">
-                        <div class="bar-outer">
-                            <div class="bar-inner" style="width: 45%;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!--  Status's row 2  -->
-                <div class="stat-row">
-                    <div class="stat-desc">ATK</div>
-                    <div class="stat-number">049</div>
-                    <div class="stat-bar">
-                        <div class="bar-outer">
-                            <div class="bar-inner" style="width: 49%;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!--  Status's row 3  -->
-                <div class="stat-row">
-                    <div class="stat-desc">DEF</div>
-                    <div class="stat-number">049</div>
-                    <div class="stat-bar">
-                        <div class="bar-outer">
-                            <div class="bar-inner" style="width: 49%;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!--  Status's row 4  -->
-                <div class="stat-row">
-                    <div class="stat-desc">SATK</div>
-                    <div class="stat-number">065</div>
-                    <div class="stat-bar">
-                        <div class="bar-outer">
-                            <div class="bar-inner" style="width: 65%;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!--  Status's row 5  -->
-                <div class="stat-row">
-                    <div class="stat-desc">SDEF</div>
-                    <div class="stat-number">065</div>
-                    <div class="stat-bar">
-                        <div class="bar-outer">
-                            <div class="bar-inner" style="width: 65%;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!--  Status's row 6  -->
-                <div class="stat-row">
-                    <div class="stat-desc">SPD</div>
-                    <div class="stat-number">045</div>
-                    <div class="stat-bar">
-                        <div class="bar-outer">
-                            <div class="bar-inner" style="width: 65%;"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>   
-    </div>
-    <div id="controlers">
-        <span   class="controlers-btn btnPrev"
-                style="background-color: rgba(116, 203,  72);"
-        >
-            <i class="fa-solid fa-chevron-left"></i>
-        </span>
-        <span   class="controlers-btn btnNext"
-                style="background-color: rgba(116, 203,  72);"
-        >
-            <i class="fa-solid fa-chevron-right"></i>
-        </span>
-    </div>
+            >
+                <i class="fa-solid fa-chevron-left"></i>
+            </span>
+            <span   class="controlers-btn btnNext"
+                    style="background-color: rgba(116, 203,  72);"
+            >
+                <i class="fa-solid fa-chevron-right"></i>
+            </span>
+        </div>
+    </main>
+    
     
     <script src="script.js"></script>
 </body>
