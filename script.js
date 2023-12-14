@@ -12,6 +12,7 @@ const controlersBtnEl  = document.querySelectorAll('.controlers-btn')
 const ballonsInstrucEl = document.querySelectorAll('.ballon-instruc')
 const btnPrevEl        = document.querySelector('.btnPrev')
 const btnNextEl        = document.querySelector('.btnNext')
+const closeBtnEl       = document.querySelectorAll('.closeBtn')
 
 let currentPokemonId = 1
 
@@ -127,3 +128,18 @@ btnNextEl.addEventListener('click', async (e) => {
         }
     }
 )
+
+document.addEventListener('DOMContentLoaded', (e) => {
+    let time = 500
+    ballonsInstrucEl.forEach((ballon, i) => {
+        setTimeout(function(){
+            ballon.style.right = '24rem'
+        }, time * (i + 1))
+    })
+})
+
+closeBtnEl.forEach((btn, i) => {
+    btn.addEventListener('click', (e) => {
+        btn.parentElement.style.right = '0'
+    })
+})

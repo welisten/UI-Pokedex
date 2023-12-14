@@ -14,6 +14,7 @@ body
     align-items: center;
     margin: 0;    
     background-color: #d6d6d6;
+    overflow: hidden;
 }
 /* ================       Pokedex        ===============*/
 #pokedex
@@ -194,41 +195,56 @@ body
 }
 
 /* ================       Aside        ===============*/
+    aside{
+        display: none;
+    }
 /* ================    instructions    ===============*/
 
 .instructions{
     position: absolute;
     top: 0;
-    right: 0;
+    right: -24rem;
     margin: 20px;
     height: calc(100% - 40px);
     width: 22em;
 }
 
 .ballon-instruc{
+    right: 0;
     background-color:  rgba(116, 203, 72, 0.589);
     position: relative;
     margin: 5px;
-    padding: 8px 12px 8px 5px;
+    padding: 20px 10px 8px 5px;
     border-radius: 8px;
+    transition: all 1s ease-out;
 }
+
 .ballon-instruc a {
     position: absolute;
     top: 0;
     right: 0;
     margin: 5px;
 }
-.ballon-instruc i {
+
+.closeBtn i{
 
     color: rgba(201, 9, 9, 0.63);
     border-radius: 50%;
     background-color: #fff;
-    padding: 4px;
+    padding: 4px 5px;
+
+}
+
+.fa-circle-info {
+    color: #fff;
+    font-size: 20px;
+    padding-right: 5px;
 
 }
 
 .ballon-instruc p {
-    font-size: 13px;
+    font-weight: lighter;
+    font-size: .9rem;
     margin: 5px;
     color: #fff;
 }
@@ -269,14 +285,15 @@ body
 /* ================       Midia Query        ===============*/
 
 @media(max-width: 470px) {
-    #pokedex{
+    #pokedex
+    {
         width: 16rem;
         height: 28rem;
     }
-    #data{
+    #data
+    {
         padding-top: 4rem;
     }
-
     #pokemon-image
     {   
         width: 160px;
@@ -284,7 +301,6 @@ body
         transform: translateY(2rem);
 
     }
-
     #base-stat
     {
         margin: .5rem 0;
@@ -303,3 +319,16 @@ body
         border-radius: 50%;
     }
 }
+
+@media(min-width: 980px){
+    aside{
+        display: block;
+    }
+}
+
+@media(max-width: 1200px){
+    .instructions{
+        width: 15rem;
+    }
+}
+
