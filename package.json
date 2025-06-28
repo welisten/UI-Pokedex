@@ -1,0 +1,22 @@
+{
+  "name": "ui-pokedex",
+  "version": "1.1.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "sass": "sass src/styles/index.scss src/styles/css/index.css",
+    "sass:watch": "sass --watch src/styles/index.scss dist/index.css",
+    "tsc": "tsc",
+    "tsc:watch": "tsc --watch",
+    "start": "concurrently \"npm run tsc:watch\" \"npm run sass:watch\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "sass": "^1.89.2",
+    "typescript": "^5.8.3"
+  }
+}

@@ -319,16 +319,3 @@ body
         border-radius: 50%;
     }
 }
-
-@media(min-width: 980px){
-    aside{
-        display: block;
-    }
-}
-
-@media(max-width: 1200px){
-    .instructions{
-        width: 15rem;
-    }
-}
-
