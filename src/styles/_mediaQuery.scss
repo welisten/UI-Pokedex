@@ -9,3 +9,39 @@
         width: 15rem;
     }
 }
+
+@media(max-width: 470px) {
+    #pokedex
+    {
+        width: 16rem;
+        height: 28rem;
+    }
+    #data
+    {
+        padding-top: 4rem;
+    }
+    #pokemon-image
+    {   
+        width: 160px;
+        height: 160px;
+        transform: translateY(2rem);
+
+    }
+    #base-stat
+    {
+        margin: .5rem 0;
+    }
+    #controlers
+    {
+        width:20.7rem;
+        height: 2rem;
+        padding: 0 0.5rem;
+    }
+    #controlers .controlers-btn
+    {
+        cursor: pointer;
+        background-color: white;
+        padding: 0 0.5rem;
+        border-radius: 50%;
+    }
+}

@@ -31,7 +31,7 @@ body
 {
     height: 40%;
     padding: 0.5rem;
-    background: url(./img/pokeball.png);
+    background: url(./../../dist/img/pokeball.png);
     background-repeat: no-repeat;
     background-position: right;
     
@@ -93,7 +93,7 @@ body
 
     width: 200px;
     height: 200px;
-    transform: translateY(3.3rem);
+    transform: translateY(2.7rem);
 }
 
 
@@ -203,13 +203,13 @@ body
 .instructions{
     position: absolute;
     top: 0;
-    right: -24rem;
+    right: 0;
     margin: 20px;
     height: calc(100% - 40px);
     width: 22em;
 }
 
-.ballon-instruc{
+.info-ballon{
     right: 0;
     background-color:  rgba(116, 203, 72, 0.589);
     position: relative;
@@ -219,7 +219,7 @@ body
     transition: all 1s ease-out;
 }
 
-.ballon-instruc a {
+.info-ballon a {
     position: absolute;
     top: 0;
     right: 0;
@@ -242,7 +242,7 @@ body
 
 }
 
-.ballon-instruc p {
+.info-ballon p {
     font-weight: lighter;
     font-size: .9rem;
     margin: 5px;
@@ -284,38 +284,4 @@ body
 
 /* ================       Midia Query        ===============*/
 
-@media(max-width: 470px) {
-    #pokedex
-    {
-        width: 16rem;
-        height: 28rem;
-    }
-    #data
-    {
-        padding-top: 4rem;
-    }
-    #pokemon-image
-    {   
-        width: 160px;
-        height: 160px;
-        transform: translateY(2rem);
 
-    }
-    #base-stat
-    {
-        margin: .5rem 0;
-    }
-    #controlers
-    {
-        width:20.7rem;
-        height: 2rem;
-        padding: 0 0.5rem;
-    }
-    #controlers .controlers-btn
-    {
-        cursor: pointer;
-        background-color: white;
-        padding: 0 0.5rem;
-        border-radius: 50%;
-    }
-}

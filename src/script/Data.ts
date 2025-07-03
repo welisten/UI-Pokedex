@@ -38,7 +38,15 @@ const typesColor: Record<PokemonType, [number, number, number]> = {
     "electric": [249, 207,  48],
     "dragon":   [112,  55, 255]
 }
+type ImageName = 
+    | "default" ;
+
+const imagesSrc: Record<ImageName, string> = {
+    default: "../dist/img/defautImage.png"
+}
 
 export {
-    typesColor
+    typesColor,
+    imagesSrc,
+    PokemonType
 }

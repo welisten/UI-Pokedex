@@ -1,20 +1,41 @@
 
-export function setDirectionControlsKey(prevId: string, nextId: string, funcPrev: () => void, funcNext: () => void){
-    const prevBtn = document.getElementById(prevId)
-    const nextBtn = document.getElementById(nextId)
-    
-    if(!prevBtn || !nextBtn){
-        throw new Error("O Botão de controle não foi encontrado")   
-    }
-    
+export function setDirectionControlsKeys(callPreviousPkmFn: () => void, callNextPkmFn: () => void){ 
+    const pokedex = document.getElementById("pokedex")
     document!.addEventListener("keydown", (e) => {
+        if(!pokedex){
+            return
+        }
         switch(e.key){
             case 'ArrowRight':
+                callNextPkmFn()
                 break
             case 'ArrowLeft':
+                callPreviousPkmFn()
                 break
             default:
                 break
         }
     })
+}
+
+export function updateInfoBallonsColors(mainColor:[number, number, number]){
+    const ballonsInstrucEl: NodeListOf<HTMLDivElement> = document.querySelectorAll(".info-ballon")
+    if(ballonsInstrucEl.length <= 0)
+        throw new Error("Pop-ups não encontrados !")
+    ballonsInstrucEl.forEach((ballon) => {
+           ballon.style.backgroundColor = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]}, 0.589)`;
+    });
+}  
+export function createElement<T extends keyof HTMLElementTagNameMap>(
+    tag: T,
+    cls?: string,
+    id?: string
+  ) {
+    const element = document.createElement(tag);
+    if (cls) {
+      let arr = cls.split(" ");
+      arr.forEach((c) => element.classList.add(c));
+    }
+    if (id) element.id = id;
+    return element;
 }

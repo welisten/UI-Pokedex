@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "sass": "sass src/styles/index.scss src/styles/css/index.css",
-    "sass:watch": "sass --watch src/styles/index.scss dist/index.css",
+    "sass": "sass src/styles/index.scss src/styles/index.css",
+    "sass:watch": "sass --watch src/styles/index.scss dist/style/index.css",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
     "start": "concurrently \"npm run tsc:watch\" \"npm run sass:watch\""

@@ -23,7 +23,7 @@ export default class Api {
     }
     
     private static handleDoubleName(name: string){
-        const pokemonNameApi = name.trim().toLowerCase().replace(/\s+/g, '-')
+        const pokemonNameApi = name.toLowerCase().replace(/\s+/g, '-')
         return pokemonNameApi
     }
 }
