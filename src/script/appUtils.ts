@@ -1,5 +1,5 @@
 
-export function setDirectionControlsKeys(callPreviousPkmFn: () => void, callNextPkmFn: () => void){ 
+export function setNavigationControlsKeys(callPreviousPkmFn: () => void, callNextPkmFn: () => void){ 
     const pokedex = document.getElementById("pokedex")
     document!.addEventListener("keydown", (e) => {
         if(!pokedex){
@@ -18,14 +18,6 @@ export function setDirectionControlsKeys(callPreviousPkmFn: () => void, callNext
     })
 }
 
-export function updateInfoBallonsColors(mainColor:[number, number, number]){
-    const ballonsInstrucEl: NodeListOf<HTMLDivElement> = document.querySelectorAll(".info-ballon")
-    if(ballonsInstrucEl.length <= 0)
-        throw new Error("Pop-ups não encontrados !")
-    ballonsInstrucEl.forEach((ballon) => {
-           ballon.style.backgroundColor = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]}, 0.589)`;
-    });
-}  
 export function createElement<T extends keyof HTMLElementTagNameMap>(
     tag: T,
     cls?: string,

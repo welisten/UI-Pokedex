@@ -1,7 +1,7 @@
 import Api from "../Api.js";
-import { setDirectionControlsKeys, updateInfoBallonsColors } from "../appUtils.js";
+import { setNavigationControlsKeys, } from "../appUtils.js";
 import { imagesSrc, typesColor } from "../Data.js";
-import PopupAside from "../Popup.js";
+import PopupAside from "../PopupAside.js";
 export default class Pokedex {
     constructor(initialId = 1) {
         this._lastPkmId = 1025;
@@ -21,6 +21,13 @@ export default class Pokedex {
         this.statInneBarEl = [];
         this.statOuterBarEl = [];
         let aux = initialId;
+        if (initialId === 1) {
+            this.lastPkmType = 'grass';
+        }
+        else {
+            true;
+            // Implementar nas proximas sprites
+        }
         if (initialId <= 0)
             aux = 1;
         if (initialId > this.lastPkmId)
@@ -42,15 +49,6 @@ export default class Pokedex {
         this.setPkdexDisplayElements();
         this.setPkdexControlsElements();
     }
-    get currentPkmid() {
-        return this._currentPkmId;
-    }
-    get lastPkmId() {
-        return this._lastPkmId;
-    }
-    set currentPkmId(newId) {
-        this._currentPkmId = newId;
-    }
     buildDisplay(containerId) {
         const mainFather_EL = document.getElementById(containerId);
         if (!mainFather_EL) {
@@ -65,12 +63,12 @@ export default class Pokedex {
         const data_El = this.createElement("div", "", "data");
         const type1_El = this.createElement("span", "type");
         const type2_El = this.createElement("span", "type");
-        type1_El.style.backgroundColor = `rgba(${typesColor.grass[0]}, ${typesColor.grass[1]}, ${typesColor.grass[2]})`;
-        type2_El.style.backgroundColor = `rgba(${typesColor.poison[0]}, ${typesColor.poison[1]}, ${typesColor.poison[2]})`;
+        type1_El.style.backgroundColor = `var(--pkmTypeColor)`;
+        type2_El.style.backgroundColor = `rgb(var(--poison))`;
         type1_El.innerText = "grass";
         type2_El.innerText = "poison";
         this.typesContainer_El.append(type1_El, type2_El);
-        this.baseStatsTitle_El.style.color = `rgba(${typesColor.grass[0]}, ${typesColor.grass[1]}, ${typesColor.grass[2]})`;
+        this.baseStatsTitle_El.style.color = `var(--pkmTypeColor)`;
         this.baseStatsTitle_El.innerText = "base stats";
         const stats_El = this.createElement("div", "", "stats");
         for (let i = 0; i < 6; i++) {
@@ -125,6 +123,13 @@ export default class Pokedex {
         data_El.append(this.typesContainer_El, this.baseStatsTitle_El, stats_El);
         return data_El;
     }
+    /**A construção da pokedex deve ser baseada no parâmetro initialId, passado pelo o usuário. Por isso, esse codigo
+     * precisa ser refatorado levando isso em consideração. Deve se verificar se o id inicial é diferente de 1 e assim
+     * decidir se haverá chamada pra API e a construção ser baseado em cima dos dados retornados.
+     *
+     * Outra opção mais robusta é SEMPRE fazer a rezição, independente se é a intanciação da classe Pokedex ou
+     * uma interação com a instância já concluida
+     */
     buildPkdexTopInterface() {
         const top_El = this.createElement("div", "", "top");
         const topBar_El = this.createElement("div", "", "top-bar");
@@ -149,22 +154,37 @@ export default class Pokedex {
             try {
                 this.validateSearchValue(pokemonIdentyfier);
             }
-            catch (_a) {
+            catch (e) {
+                if (e.message === "Identificador fora do intervalo permitido") {
+                    PopupAside.buildnewPopup("instructions", `Os identificadores de Pokemon vão de <b alert>1</b> a <b alert>${this.lastPkmId}</b>. Selecione uma opção dentro do intervalo!`, false, true);
+                }
                 return;
             }
             const pokemonData = await this.getPokemon(pokemonIdentyfier);
             if (!pokemonData) {
-                PopupAside.buildnewPopup("instructions", `Pokémon não encontrado.`, true);
+                PopupAside.buildnewPopup("instructions", `Pokémon não encontrado.`, true, true);
                 target.value = "";
                 return;
             }
             this._currentPkmId = pokemonData.id;
-            const mainColor = typesColor[pokemonData.types[0].type.name];
-            this.updatePokedexTop(pokemonData, mainColor);
-            this.updatePokedexData(pokemonData, mainColor);
-            this.updatePokedexControls(mainColor);
-            updateInfoBallonsColors(mainColor);
+            const pkmType = pokemonData.types[0].type.name;
+            const mainColor = typesColor[pkmType];
+            this.updatePokedexTop(pokemonData);
+            this.updatePokedexData(pokemonData, pkmType);
+            if (!this.isSameType(pkmType)) {
+                PopupAside.updateInfoBallonsColors(mainColor);
+                document.body.style.setProperty("--pkmTypeColor", `rgb(var(--${pkmType}))`);
+            }
         });
+    }
+    isSameType(type) {
+        if (type === this.lastPkmType) {
+            return true;
+        }
+        else {
+            this.lastPkmType = type;
+            return false;
+        }
     }
     async getPokemon(searchValue) {
         const trimmed = searchValue.trim();
@@ -194,27 +214,25 @@ export default class Pokedex {
             return undefined;
         }
     }
-    updatePokedexTop(pokemonData, mainColor) {
-        this.pokedex_El.style.backgroundColor = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]})`;
+    updatePokedexTop(pokemonData) {
         this.pkmIdNumber_El.innerHTML = "#" + pokemonData.id.toString().padStart(3, "0");
         this.pkmImage_El.src = pokemonData.sprites.other.home.front_default;
     }
-    updatePokedexData(pokemonData, mainColor) {
-        this.baseStatsTitle_El.style.color = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]})`;
+    updatePokedexData(pokemonData, pkmType) {
         this.typesContainer_El.innerHTML = " ";
-        pokemonData.types.forEach((t) => {
-            let newType = this.createElement("span", "type");
-            let colors = typesColor[t.type.name];
-            newType.innerHTML = t.type.name;
-            newType.style.backgroundColor = `rgb(${colors[0]}, ${colors[1]}, ${colors[2]})`;
-            this.typesContainer_El.appendChild(newType);
+        pokemonData.types.forEach((t, i) => {
+            const type = t.type.name;
+            let newTypeEl = this.createElement("span", "type");
+            if (i > 0) {
+                newTypeEl.style.backgroundColor = `rgb(var(--${type}))`;
+            }
+            newTypeEl.innerHTML = type;
+            this.typesContainer_El.appendChild(newTypeEl);
         });
         pokemonData.stats.forEach((s, i) => {
             this.statNumberEl[i].innerHTML = s.base_stat.toString().padStart(3, "0");
             this.statInneBarEl[i].style.width = s.base_stat + `%`;
-            this.statInneBarEl[i].style.backgroundColor = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]})`;
-            this.statOuterBarEl[i].style.backgroundColor = `rgba(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]}, 0.3)`;
-            this.statDescEl[i].style.color = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]})`;
+            this.statOuterBarEl[i].style.backgroundColor = `rgba(var(--${pkmType}) / var(--alphaType))`;
         });
     }
     validateSearchValue(value) {
@@ -222,8 +240,7 @@ export default class Pokedex {
         const isPositiveInt = /^\d+$/.test(trimmed);
         if (isPositiveInt) {
             if (parseInt(value) > this.lastPkmId || parseInt(value) < 1) {
-                PopupAside.buildnewPopup("instructions", `Os identificadores de Pokemon vão de <b>1</b> a <b>${this.lastPkmId}</b>. Selecione uma opção válida!`);
-                throw new Error("Identificador invalido");
+                throw new Error("Identificador fora do intervalo permitido");
             }
         }
     }
@@ -233,20 +250,12 @@ export default class Pokedex {
         if (!mainFather_EL) {
             throw new Error("Elemento pai da pokedex não foi encontrado");
         }
-        this.btnPrevEl.style.backgroundColor = `rgba(${typesColor.grass[0]}, ${typesColor.grass[1]}, ${typesColor.grass[2]})`;
-        this.btnNextEl.style.backgroundColor = `rgba(${typesColor.grass[0]}, ${typesColor.grass[1]}, ${typesColor.grass[2]})`;
         const iconChevronLeft = this.createElement("i", "fa-solid fa-chevron-left");
         const iconChevronRight = this.createElement("i", "fa-solid fa-chevron-right");
         this.btnPrevEl.append(iconChevronLeft);
         this.btnNextEl.append(iconChevronRight);
         this.controlers.append(this.btnPrevEl, this.btnNextEl);
         mainFather_EL.append(this.controlers);
-    }
-    updatePokedexControls(mainColor) {
-        const controlersBtnEl = document.querySelectorAll(".controlers-btn");
-        controlersBtnEl.forEach((btn, i) => {
-            btn.style.backgroundColor = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]})`;
-        });
     }
     setPkdexControlsElements() {
         const callPreviousPkmFn = async () => {
@@ -265,7 +274,7 @@ export default class Pokedex {
         };
         this.btnNextEl.addEventListener("click", callNextPkmFn);
         this.btnPrevEl.addEventListener("click", callPreviousPkmFn);
-        setDirectionControlsKeys(callPreviousPkmFn, callNextPkmFn);
+        setNavigationControlsKeys(callPreviousPkmFn, callNextPkmFn);
     }
     createElement(tag, cls, id) {
         const element = document.createElement(tag);
@@ -276,5 +285,20 @@ export default class Pokedex {
         if (id)
             element.id = id;
         return element;
+    }
+    get currentPkmid() {
+        return this._currentPkmId;
+    }
+    get lastPkmId() {
+        return this._lastPkmId;
+    }
+    get lastPkmType() {
+        return this._lastPkmType;
+    }
+    set currentPkmId(newId) {
+        this._currentPkmId = newId;
+    }
+    set lastPkmType(newType) {
+        this._lastPkmType = newType;
     }
 }

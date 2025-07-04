@@ -17,7 +17,7 @@ class PopupAside {
             });
         });
     }
-    static buildnewPopup(mainFatherId, msg, isTemporary = false) {
+    static buildnewPopup(mainFatherId, msg, isTemporary = false, isAlert = false) {
         const mainFather = document.getElementById(mainFatherId);
         if (!mainFather) {
             throw new Error("Pai para o popup não encontrado:\n ID inválido ou inexistente");
@@ -25,6 +25,7 @@ class PopupAside {
         const ballon = createElement('div', 'info-ballon');
         const paragraf = createElement('p');
         const infoIcon = '<i class="fa-solid fa-circle-info"></i>';
+        isAlert ? ballon.setAttribute("alert", '') : true;
         paragraf.innerHTML = infoIcon + msg;
         ballon.append(paragraf);
         mainFather.append(ballon);
@@ -45,6 +46,14 @@ class PopupAside {
                 }, this.time * 2);
             }, this.time * 6);
         }
+    }
+    static updateInfoBallonsColors(mainColor) {
+        const ballonsInstrucEl = document.querySelectorAll(".info-ballon:not([alert])");
+        if (ballonsInstrucEl.length <= 0)
+            throw new Error("Pop-ups não encontrados !");
+        ballonsInstrucEl.forEach((ballon) => {
+            ballon.style.backgroundColor = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]}, 0.589)`;
+        });
     }
     static setPopupCloseBtns(mainFatherId) {
         const mainFather = document.getElementById(mainFatherId);

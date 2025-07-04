@@ -1,4 +1,4 @@
-export function setDirectionControlsKeys(callPreviousPkmFn, callNextPkmFn) {
+export function setNavigationControlsKeys(callPreviousPkmFn, callNextPkmFn) {
     const pokedex = document.getElementById("pokedex");
     document.addEventListener("keydown", (e) => {
         if (!pokedex) {
@@ -14,14 +14,6 @@ export function setDirectionControlsKeys(callPreviousPkmFn, callNextPkmFn) {
             default:
                 break;
         }
-    });
-}
-export function updateInfoBallonsColors(mainColor) {
-    const ballonsInstrucEl = document.querySelectorAll(".info-ballon");
-    if (ballonsInstrucEl.length <= 0)
-        throw new Error("Pop-ups não encontrados !");
-    ballonsInstrucEl.forEach((ballon) => {
-        ballon.style.backgroundColor = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]}, 0.589)`;
     });
 }
 export function createElement(tag, cls, id) {

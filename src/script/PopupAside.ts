@@ -23,7 +23,7 @@ export default class PopupAside{
         })
     }
 
-    static buildnewPopup(mainFatherId:string, msg: string, isTemporary: boolean = false, ){
+    static buildnewPopup(mainFatherId:string, msg: string, isTemporary: boolean = false, isAlert:boolean = false){
         const mainFather = document.getElementById(mainFatherId)
 
         if(!mainFather){
@@ -34,6 +34,8 @@ export default class PopupAside{
         const paragraf = createElement('p')
         const infoIcon = '<i class="fa-solid fa-circle-info"></i>'
         
+        isAlert ? ballon.setAttribute("alert", '') : true
+
         paragraf.innerHTML = infoIcon + msg
         ballon.append(paragraf)
         mainFather.append(ballon)
@@ -55,7 +57,14 @@ export default class PopupAside{
             }, this.time * 6)
         }
     }
-
+    static updateInfoBallonsColors(mainColor:[number, number, number]){
+    const ballonsInstrucEl: NodeListOf<HTMLDivElement> = document.querySelectorAll(".info-ballon:not([alert])")
+    if(ballonsInstrucEl.length <= 0)
+        throw new Error("Pop-ups não encontrados !")
+    ballonsInstrucEl.forEach((ballon) => {
+           ballon.style.backgroundColor = `rgb(${mainColor[0]}, ${mainColor[1]}, ${mainColor[2]}, 0.589)`;
+    });
+}
     private static setPopupCloseBtns(mainFatherId: string):void{ 
         const mainFather = document.getElementById(mainFatherId)
         

@@ -10,7 +10,7 @@ body {
   justify-content: center;
   align-items: center;
   margin: 0;
-  background-color: #d6d6d6;
+  background-color: var(--bgColor);
   overflow: hidden;
 }
 
@@ -19,7 +19,7 @@ body {
   width: 22rem;
   height: 34rem;
   padding: 0.3rem;
-  background: rgb(116, 203, 72);
+  background: var(--pkmTypeColor);
   border-radius: 8px;
   transition: background-color 0.5s ease-in-out;
 }
@@ -100,6 +100,7 @@ body {
 .type {
   padding: 0.27rem 0.6rem;
   color: white;
+  background-color: var(--pkmTypeColor);
   border-radius: 15px;
   font-size: 0.8rem;
   text-transform: capitalize;
@@ -125,7 +126,7 @@ body {
 
 .stat-desc {
   margin-right: 0.6rem;
-  color: rgb(116, 203, 72);
+  color: var(--pkmTypeColor);
   font-weight: bold;
   text-align: right;
   transition: color 0.5s ease-in-out;
@@ -152,13 +153,11 @@ body {
   width: 100%;
   height: 0.3rem;
   display: flex;
-  background-color: rgba(116, 203, 72, 0.3);
-  border-radius: 4px;
-  transition: 0.5s ease-in-out;
+  background-color: rgba(var(--grass)/var(--alphaType));
 }
 
 .bar-inner {
-  background-color: rgb(116, 203, 72);
+  background-color: var(--pkmTypeColor);
   border-radius: 4px;
   transition: 0.5s ease-in-out;
 }
@@ -183,9 +182,24 @@ aside {
   background-color: rgba(116, 203, 72, 0.589);
   position: relative;
   margin: 5px;
-  padding: 20px 10px 8px 5px;
+  padding: 5px 1.65rem 5px 5px;
   border-radius: 8px;
   transition: all 1s ease-out;
+}
+
+.info-ballon[alert] {
+  background-color: rgba(206, 29, 29, 0.7215686275);
+}
+
+b[alert] {
+  color: #7e2424;
+  padding: 0 5px;
+}
+
+.info-ballon p {
+  font-size: 0.9rem;
+  margin: 5px;
+  color: #fff;
 }
 
 .info-ballon a {
@@ -208,13 +222,6 @@ aside {
   padding-right: 5px;
 }
 
-.info-ballon p {
-  font-weight: lighter;
-  font-size: 0.9rem;
-  margin: 5px;
-  color: #fff;
-}
-
 /* ================       Controlers        ===============*/
 #controlers {
   position: absolute;
@@ -230,8 +237,8 @@ aside {
 }
 
 #controlers .controlers-btn {
+  background-color: var(--pkmTypeColor);
   cursor: pointer;
-  background-color: white;
   padding: 0.5rem 1rem;
   border-radius: 50%;
   color: #fff;
@@ -281,6 +288,29 @@ aside {
     padding: 0 0.5rem;
     border-radius: 50%;
   }
+}
+:root {
+  --bgColor: #d6d6d6;
+  --pkmTypeColor: rgb(116, 203, 72);
+  --alphaType: 0.3;
+  --rock: 182 158 49;
+  --ghost: 112 85 155;
+  --steel: 183 185 208;
+  --water: 100 147 235;
+  --grass: 116 203 72;
+  --psychic: 251 85 132;
+  --ice: 154 214 223;
+  --dark: 117 87 76;
+  --fairy: 230 158 172;
+  --normal: 170 166 127;
+  --fighting: 193 34 57;
+  --flying: 168 145 236;
+  --poison: 164 62 158;
+  --ground: 222 193 107;
+  --bug: 167 183 35;
+  --fire: 245 125 49;
+  --electric: 249 207 48;
+  --dragon: 112 55 255;
 }
 
 /*# sourceMappingURL=index.css.map */
