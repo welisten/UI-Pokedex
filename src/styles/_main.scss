@@ -15,6 +15,8 @@ body
     margin: 0;    
     background-color: var(--bgColor);
     overflow: hidden;
+    border: 5px solid var(--pokemonTypeColor);
+    border-radius: 5px;
 }
 /* ================       Pokedex        ===============*/
 #pokedex
@@ -22,7 +24,7 @@ body
     width: 22rem;
     height: 34rem;
     padding: 0.3rem;    
-    background: var(--pkmTypeColor);
+    background: var(--pokemonTypeColor);
     border-radius: 8px;
     transition: background-color 0.5s ease-in-out ;
 }
@@ -120,7 +122,7 @@ body
 {
     padding:0.27rem 0.6rem ;
     color: white;
-    background-color: var(--pkmTypeColor);
+    background-color: var(--pokemonTypeColor);
     border-radius: 15px;
     font-size: 0.8rem;
     text-transform: capitalize;
@@ -152,7 +154,7 @@ body
 {
     margin-right: 0.6rem;
 
-    color: var(--pkmTypeColor);
+    color: var(--pokemonTypeColor);
     font-weight: bold;
     text-align: right;
     transition: color 0.5s ease-in-out;
@@ -188,7 +190,7 @@ body
 
 .bar-inner
 {
-    background-color: var(--pkmTypeColor);
+    background-color: var(--pokemonTypeColor);
     border-radius: 4px;
     transition:  0.5s ease-in-out ;
 }
@@ -199,7 +201,8 @@ body
     }
 /* ================    instructions    ===============*/
 
-.instructions{
+
+.informations{
     position: absolute;
     top: 0;
     right: 0;
@@ -209,18 +212,24 @@ body
 }
 
 .info-ballon{
-    right: 0;
+    right: -25rem;
     background-color:  rgba(116, 203, 72, 0.589);
     position: relative;
     margin: 5px;
     padding: 5px 1.65rem 5px 5px;
     border-radius: 8px;
-    transition: all 1s ease-out;
-
-
+    transition: top 1s ease-out;
 }
 .info-ballon[alert]{
-    background-color: #ce1d1db8;;
+    background-color: #ce1d1db8;
+
+    i.fa-bomb{
+    color: #ce1d1db8;
+    background-color: white;
+    border-radius: 50%;
+    padding: 4px;
+    margin-right: 4px;
+    }
 }
 b[alert]{
     color: #7e2424;
@@ -256,9 +265,9 @@ b[alert]{
 
 }
 
-/* ================       Controlers        ===============*/
+/* ================       Controllers        ===============*/
 
-#controlers
+#controllers
 {
     position: absolute;
     top: 50%;
@@ -272,9 +281,9 @@ b[alert]{
     transform: translate(-50%, -50%);
 }
 
-#controlers .controlers-btn
+#controllers .controllers-btn
 {
-    background-color: var(--pkmTypeColor);
+    background-color: var(--pokemonTypeColor);
     cursor: pointer;
     padding: 0.5rem 1rem;
     border-radius: 50%;
@@ -283,7 +292,7 @@ b[alert]{
 
 }
 
-#controlers .controlers-btn:active{
+#controllers .controllers-btn:active{
     transform: scale(1.1);
     transition: scale 0.5s ease-in-out;
 }

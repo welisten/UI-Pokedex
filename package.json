@@ -9,14 +9,26 @@
     "sass:watch": "sass --watch src/styles/index.scss dist/style/index.css",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
-    "start": "concurrently \"npm run tsc:watch\" \"npm run sass:watch\""
+    "start": "concurrently \"npm run tsc:watch\" \"npm run sass:watch\"",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "jest": {
+    "transform": {}
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.10",
     "concurrently": "^9.2.0",
+    "jest": "^30.0.4",
     "sass": "^1.89.2",
+    "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.0"
   }
 }

@@ -9,18 +9,18 @@ class Api {
                 throw new Error(`API respondeu com status ${response.status}`);
             }
         }
-        catch (_a) {
-            throw new Error(`Não foi possível recuperar o pokemon ${pokemonName} da API`);
+        catch (erro) {
+            throw new Error(`Não foi possível recuperar o pokemon ${pokemonName} da API:<br>${erro.message}`);
         }
     }
     static async getPokemon(userPokemonName) {
-        const pokemonNameApi = this.handleDoubleName(userPokemonName);
-        const pokemonData = await this.fetchApi(pokemonNameApi);
+        const apiPokemonName = this.handleDoubleName(userPokemonName);
+        const pokemonData = await this.fetchApi(apiPokemonName);
         return pokemonData;
     }
     static handleDoubleName(name) {
-        const pokemonNameApi = name.toLowerCase().replace(/\s+/g, '-');
-        return pokemonNameApi;
+        const apiPokemonName = name.toLowerCase().replace(/\s+/g, '-');
+        return apiPokemonName;
     }
 }
 Api.url = 'https://pokeapi.co/api/v2/pokemon/';

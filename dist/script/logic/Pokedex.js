@@ -1,28 +1,34 @@
-import Api from "../Api.js";
-import { setNavigationControlsKeys, } from "../appUtils.js";
-import { imagesSrc, typesColor } from "../Data.js";
-import PopupAside from "../PopupAside.js";
+/** Proximas Implementações
+ *  - carregamento inicial dinâmico
+ *  - adição do nome do pokemon ao pokedexData
+ *  - desacloplar construindo uma pokedexBuilder
+ *  - ThemeManeger para controle de css inline
+ *  - atualizar animações para requestAnimationFrame
+ */
+import { setNavigationControlsKeys, PokedexHelper, createElement } from "../appUtils.js";
+import { imagesSrc } from "../Data.js";
+import { PokemonRepository } from "./PokemonRepository.js";
 export default class Pokedex {
-    constructor(initialId = 1) {
-        this._lastPkmId = 1025;
-        this.pokemonIdCache = new Map();
-        this.pokemonNameCache = new Map();
-        this.pokedex_El = this.createElement("div", "", "pokedex");
-        this.controlers = this.createElement("div", "", "controlers");
-        this.search_El = this.createElement("input", "", "search");
-        this.pkmIdNumber_El = this.createElement("span", "", "number");
-        this.pkmImage_El = this.createElement("img", "", "pokemon-image");
-        this.typesContainer_El = this.createElement("div", "", "types");
-        this.baseStatsTitle_El = this.createElement("h4", "", "base-stat");
-        this.btnPrevEl = this.createElement("span", "controlers-btn btnPrev", "mainBtnPrev");
-        this.btnNextEl = this.createElement("span", "controlers-btn btnNext", "mainBtnNext");
-        this.statDescEl = [];
-        this.statNumberEl = [];
-        this.statInneBarEl = [];
-        this.statOuterBarEl = [];
+    constructor(initialId = 1, popup) {
+        this._lastPokemonId = 1025;
+        this._pokemonRepository = new PokemonRepository();
+        this.pokedexEl = createElement("div", "", "pokedex");
+        this.controllers = createElement("div", "", "controllers");
+        this.searchEl = createElement("input", "", "search");
+        this.pokemonIdNumberEl = createElement("span", "", "number");
+        this.pokemonImageEl = createElement("img", "", "pokemon-image");
+        this.typesContainerEl = createElement("div", "", "types");
+        this.baseStatsTitleEl = createElement("h4", "", "base-stat");
+        this.informationContainerEl = document.getElementById("informations");
+        this.btnPrevEl = createElement("span", "controllers-btn btnPrev", "mainBtnPrev");
+        this.btnNextEl = createElement("span", "controllers-btn btnNext", "mainBtnNext");
+        this.statDescList = [];
+        this.statNumberList = [];
+        this.statInnerBarList = [];
+        this.statOuterBarList = [];
         let aux = initialId;
         if (initialId === 1) {
-            this.lastPkmType = 'grass';
+            this.lastPokemonType = 'grass';
         }
         else {
             true;
@@ -30,275 +36,213 @@ export default class Pokedex {
         }
         if (initialId <= 0)
             aux = 1;
-        if (initialId > this.lastPkmId)
-            aux = this.lastPkmId;
-        this._currentPkmId = aux;
+        if (initialId > this.lastPokemonId)
+            aux = this.lastPokemonId;
+        this._currentPokemonId = aux;
+        this._popup = popup;
+        this._pokedexHelper = new PokedexHelper(this.popupMessege);
     }
     init() {
         this.buildPokedex("pokedexScreen");
         this.setPokedexElements();
-        PopupAside.buildnewPopup("instructions", "Procure pelo Pokemon desejado na barra de pesquisas");
-        PopupAside.buildnewPopup("instructions", "Voce também pode pesquisar através do número de identificação do Pokemon");
-        PopupAside.show();
+        this.popupMessege.popup("Procure pelo Pokemon desejado na barra de pesquisas");
+        this.popupMessege.popup("Voce também pode pesquisar através do número de identificação do Pokemon");
     }
     buildPokedex(containerId) {
-        this.buildDisplay(containerId);
+        this.buildPkdexDisplay(containerId);
         this.buildPkdexControls(containerId);
     }
-    setPokedexElements() {
-        this.setPkdexDisplayElements();
-        this.setPkdexControlsElements();
-    }
-    buildDisplay(containerId) {
+    buildPkdexDisplay(containerId) {
         const mainFather_EL = document.getElementById(containerId);
         if (!mainFather_EL) {
             throw new Error("Elemento pai da pokedex não foi encontrado");
         }
         const top_El = this.buildPkdexTopInterface();
-        const data_El = this.buildPkdexDataInterface();
-        this.pokedex_El.append(top_El, data_El);
-        mainFather_EL.append(this.pokedex_El);
+        const dataEl = this.buildPkdexDataInterface();
+        this.pokedexEl.append(top_El, dataEl);
+        mainFather_EL.append(this.pokedexEl);
     }
-    buildPkdexDataInterface() {
-        const data_El = this.createElement("div", "", "data");
-        const type1_El = this.createElement("span", "type");
-        const type2_El = this.createElement("span", "type");
-        type1_El.style.backgroundColor = `var(--pkmTypeColor)`;
-        type2_El.style.backgroundColor = `rgb(var(--poison))`;
-        type1_El.innerText = "grass";
-        type2_El.innerText = "poison";
-        this.typesContainer_El.append(type1_El, type2_El);
-        this.baseStatsTitle_El.style.color = `var(--pkmTypeColor)`;
-        this.baseStatsTitle_El.innerText = "base stats";
-        const stats_El = this.createElement("div", "", "stats");
-        for (let i = 0; i < 6; i++) {
-            let numberValue;
-            let stat;
-            switch (i + 1) {
-                case 1:
-                    numberValue = "45";
-                    stat = "HP";
-                    break;
-                case 2:
-                    numberValue = "49";
-                    stat = "ATK";
-                    break;
-                case 3:
-                    numberValue = "49";
-                    stat = "DEF";
-                    break;
-                case 4:
-                    numberValue = "65";
-                    stat = "SATK";
-                    break;
-                case 5:
-                    numberValue = "65";
-                    stat = "SDEF";
-                    break;
-                case 6:
-                    numberValue = "45";
-                    stat = "SPD";
-                    break;
-                default:
-                    break;
-            }
-            let statRow_El = this.createElement("div", "stat-row");
-            let statRowDesc_El = this.createElement("div", "stat-desc");
-            let statRowNumber_El = this.createElement("div", "stat-number");
-            let statRowBar_El = this.createElement("div", "stat-bar");
-            let statRowBarOuter_El = this.createElement("div", "bar-outer");
-            let statRowBarInner_El = this.createElement("div", "bar-inner");
-            this.statDescEl.push(statRowDesc_El);
-            this.statNumberEl.push(statRowNumber_El);
-            this.statInneBarEl.push(statRowBarInner_El);
-            this.statOuterBarEl.push(statRowBarOuter_El);
-            statRowBarInner_El.style.width = numberValue + "%";
-            statRowBarOuter_El.appendChild(statRowBarInner_El);
-            statRowBar_El.appendChild(statRowBarOuter_El);
-            statRowDesc_El.innerText = stat;
-            statRowNumber_El.innerText = "0" + numberValue;
-            statRow_El.append(statRowDesc_El, statRowNumber_El, statRowBar_El);
-            stats_El.append(statRow_El);
-        }
-        data_El.append(this.typesContainer_El, this.baseStatsTitle_El, stats_El);
-        return data_El;
-    }
-    /**A construção da pokedex deve ser baseada no parâmetro initialId, passado pelo o usuário. Por isso, esse codigo
-     * precisa ser refatorado levando isso em consideração. Deve se verificar se o id inicial é diferente de 1 e assim
-     * decidir se haverá chamada pra API e a construção ser baseado em cima dos dados retornados.
-     *
-     * Outra opção mais robusta é SEMPRE fazer a rezição, independente se é a intanciação da classe Pokedex ou
-     * uma interação com a instância já concluida
-     */
-    buildPkdexTopInterface() {
-        const top_El = this.createElement("div", "", "top");
-        const topBar_El = this.createElement("div", "", "top-bar");
-        const searchBar_El = this.createElement("div", "searchBar");
-        this.search_El.setAttribute("type", "text");
-        this.search_El.setAttribute("value", "bulbasaur");
-        const glassIcon_El = this.createElement("i", "fa-solid fa-magnifying-glass");
-        const pokeImagePlaceholder_El = this.createElement("div", "", 'poke-image-placeholder');
-        this.pkmImage_El.src = imagesSrc.default;
-        this.pkmImage_El.alt = "bulbasaur";
-        this.pkmIdNumber_El.innerText = "#001";
-        searchBar_El.append(this.search_El, glassIcon_El);
-        topBar_El.append(searchBar_El, this.pkmIdNumber_El);
-        pokeImagePlaceholder_El.appendChild(this.pkmImage_El);
-        top_El.append(topBar_El, pokeImagePlaceholder_El);
-        return top_El;
-    }
-    setPkdexDisplayElements() {
-        this.search_El.addEventListener("change", async (event) => {
-            const target = event.target;
-            const pokemonIdentyfier = target.value;
-            try {
-                this.validateSearchValue(pokemonIdentyfier);
-            }
-            catch (e) {
-                if (e.message === "Identificador fora do intervalo permitido") {
-                    PopupAside.buildnewPopup("instructions", `Os identificadores de Pokemon vão de <b alert>1</b> a <b alert>${this.lastPkmId}</b>. Selecione uma opção dentro do intervalo!`, false, true);
-                }
-                return;
-            }
-            const pokemonData = await this.getPokemon(pokemonIdentyfier);
-            if (!pokemonData) {
-                PopupAside.buildnewPopup("instructions", `Pokémon não encontrado.`, true, true);
-                target.value = "";
-                return;
-            }
-            this._currentPkmId = pokemonData.id;
-            const pkmType = pokemonData.types[0].type.name;
-            const mainColor = typesColor[pkmType];
-            this.updatePokedexTop(pokemonData);
-            this.updatePokedexData(pokemonData, pkmType);
-            if (!this.isSameType(pkmType)) {
-                PopupAside.updateInfoBallonsColors(mainColor);
-                document.body.style.setProperty("--pkmTypeColor", `rgb(var(--${pkmType}))`);
-            }
-        });
-    }
-    isSameType(type) {
-        if (type === this.lastPkmType) {
-            return true;
-        }
-        else {
-            this.lastPkmType = type;
-            return false;
-        }
-    }
-    async getPokemon(searchValue) {
-        const trimmed = searchValue.trim();
-        const isPositiveInteger = /^\d+$/.test(trimmed);
-        if (isPositiveInteger) {
-            const id = parseInt(trimmed);
-            if (this.pokemonIdCache.has(id)) {
-                return this.pokemonIdCache.get(id);
-            }
-        }
-        else {
-            const name = trimmed.toLowerCase();
-            if (this.pokemonNameCache.has(name)) {
-                return this.pokemonNameCache.get(name);
-            }
-        }
-        try {
-            const pokemon = await Api.getPokemon(trimmed);
-            if (!pokemon)
-                return undefined;
-            this.pokemonIdCache.set(pokemon.id, pokemon);
-            this.pokemonNameCache.set(pokemon.name.toLowerCase(), pokemon);
-            return pokemon;
-        }
-        catch (error) {
-            console.error("Erro ao buscar pokemon.", error);
-            return undefined;
-        }
-    }
-    updatePokedexTop(pokemonData) {
-        this.pkmIdNumber_El.innerHTML = "#" + pokemonData.id.toString().padStart(3, "0");
-        this.pkmImage_El.src = pokemonData.sprites.other.home.front_default;
-    }
-    updatePokedexData(pokemonData, pkmType) {
-        this.typesContainer_El.innerHTML = " ";
-        pokemonData.types.forEach((t, i) => {
-            const type = t.type.name;
-            let newTypeEl = this.createElement("span", "type");
-            if (i > 0) {
-                newTypeEl.style.backgroundColor = `rgb(var(--${type}))`;
-            }
-            newTypeEl.innerHTML = type;
-            this.typesContainer_El.appendChild(newTypeEl);
-        });
-        pokemonData.stats.forEach((s, i) => {
-            this.statNumberEl[i].innerHTML = s.base_stat.toString().padStart(3, "0");
-            this.statInneBarEl[i].style.width = s.base_stat + `%`;
-            this.statOuterBarEl[i].style.backgroundColor = `rgba(var(--${pkmType}) / var(--alphaType))`;
-        });
-    }
-    validateSearchValue(value) {
-        const trimmed = value.trim();
-        const isPositiveInt = /^\d+$/.test(trimmed);
-        if (isPositiveInt) {
-            if (parseInt(value) > this.lastPkmId || parseInt(value) < 1) {
-                throw new Error("Identificador fora do intervalo permitido");
-            }
-        }
-    }
-    ;
     buildPkdexControls(containerId) {
         const mainFather_EL = document.getElementById(containerId);
         if (!mainFather_EL) {
             throw new Error("Elemento pai da pokedex não foi encontrado");
         }
-        const iconChevronLeft = this.createElement("i", "fa-solid fa-chevron-left");
-        const iconChevronRight = this.createElement("i", "fa-solid fa-chevron-right");
+        const iconChevronLeft = createElement("i", "fa-solid fa-chevron-left");
+        const iconChevronRight = createElement("i", "fa-solid fa-chevron-right");
         this.btnPrevEl.append(iconChevronLeft);
         this.btnNextEl.append(iconChevronRight);
-        this.controlers.append(this.btnPrevEl, this.btnNextEl);
-        mainFather_EL.append(this.controlers);
+        this.controllers.append(this.btnPrevEl, this.btnNextEl);
+        mainFather_EL.append(this.controllers);
+    }
+    /**A construção da pokedex deve ser baseada no parâmetro initialId, passado pelo o usuário. Por isso, esse codigo
+     * precisa ser refatorado levando isso em consideração. Deve se verificar se o id inicial é diferente de 1 e assim
+     * decidir se haverá chamada pra API e a construção ser baseado em cima dos dados retornados.
+     *
+     * Outra opção mais robusta é SEMPRE fazer a requizição, independente se é a intanciação da classe Pokedex ou
+     * uma interação com a instância já concluida
+     */
+    buildPkdexTopInterface() {
+        const top_El = createElement("div", "", "top");
+        const topBar_El = createElement("div", "", "top-bar");
+        const searchBar_El = createElement("div", "searchBar");
+        this.searchEl.setAttribute("type", "text");
+        this.searchEl.setAttribute("value", "bulbasaur");
+        const glassIcon_El = createElement("i", "fa-solid fa-magnifying-glass");
+        const pokeImagePlaceholder_El = createElement("div", "", 'poke-image-placeholder');
+        this.pokemonImageEl.src = imagesSrc.default;
+        this.pokemonImageEl.alt = "bulbasaur";
+        this.pokemonIdNumberEl.innerText = "#001";
+        searchBar_El.append(this.searchEl, glassIcon_El);
+        topBar_El.append(searchBar_El, this.pokemonIdNumberEl);
+        pokeImagePlaceholder_El.appendChild(this.pokemonImageEl);
+        top_El.append(topBar_El, pokeImagePlaceholder_El);
+        return top_El;
+    }
+    buildPkdexDataInterface() {
+        const dataEl = createElement("div", "", "data");
+        // Types
+        this.typesContainerEl.append(...this.pokedexHelper.buildTypes(["grass", "poison"]));
+        dataEl.append(this.typesContainerEl);
+        // Base stats
+        this.baseStatsTitleEl.style.color = `var(--pokemonTypeColor)`;
+        this.baseStatsTitleEl.innerText = "base stats";
+        const statsEl = createElement("div", "", "stats");
+        const statsList = [
+            { stat: "HP", value: 45 },
+            { stat: "ATK", value: 49 },
+            { stat: "DEF", value: 49 },
+            { stat: "SATK", value: 65 },
+            { stat: "SDEF", value: 65 },
+            { stat: "SPD", value: 45 }
+        ];
+        statsList.forEach((s, i) => {
+            const statRowElements = this.pokedexHelper.buildStatRow(s.stat, s.value);
+            statsEl.append(statRowElements.row);
+            this.statDescList.push(statRowElements.desc);
+            this.statNumberList.push(statRowElements.number);
+            this.statInnerBarList.push(statRowElements.inneBar);
+            this.statOuterBarList.push(statRowElements.outerBar);
+        });
+        dataEl.append(this.baseStatsTitleEl, statsEl);
+        return dataEl;
+    }
+    setPokedexElements() {
+        this.setPkdexDisplayElements();
+        this.setPkdexControlsElements();
+    }
+    setPkdexDisplayElements() {
+        this.searchEl.addEventListener("change", async (event) => {
+            const target = event.target;
+            const pokemonIdentifier = target.value;
+            //validação
+            try {
+                this.pokedexHelper.validateSearchValue(pokemonIdentifier, this.lastPokemonId);
+            }
+            catch (e) {
+                if (e.message === "Identificador fora do intervalo permitido") {
+                    this.popupMessege.popup(`Os identificadores de Pokemon vão de <b alert>1</b> a <b alert>${this.lastPokemonId}</b>. Selecione uma opção dentro do intervalo!`, false, true);
+                    target.value = "";
+                }
+                return;
+            }
+            const pokemonData = await this.loadPokemon(pokemonIdentifier);
+            if (pokemonData) {
+                this.renderPokemon(pokemonData);
+            }
+        });
     }
     setPkdexControlsElements() {
-        const callPreviousPkmFn = async () => {
-            this._currentPkmId = this._currentPkmId > 1 ? this._currentPkmId - 1 : this.lastPkmId;
-            const pokemonData = await this.getPokemon(this._currentPkmId.toString());
-            const eventoChange = new Event("change");
-            this.search_El.value = pokemonData.name;
-            this.search_El.dispatchEvent(eventoChange);
-        };
-        const callNextPkmFn = async () => {
-            this._currentPkmId = this._currentPkmId < this.lastPkmId ? this._currentPkmId + 1 : 1;
-            const pokemonData = await this.getPokemon(this._currentPkmId.toString());
-            const eventoChange = new Event("change");
-            this.search_El.value = pokemonData.name;
-            this.search_El.dispatchEvent(eventoChange);
-        };
-        this.btnNextEl.addEventListener("click", callNextPkmFn);
-        this.btnPrevEl.addEventListener("click", callPreviousPkmFn);
-        setNavigationControlsKeys(callPreviousPkmFn, callNextPkmFn);
+        this.btnNextEl.addEventListener("click", async () => await this.pokedexHelper.callNextPokemonFn(this.currentPokemonid, this.lastPokemonId, this.pokemonRepository.getPokemon.bind(this.pokemonRepository), this.searchEl));
+        this.btnPrevEl.addEventListener("click", async () => this.pokedexHelper.callPreviousPokemonFn(this.currentPokemonid, this.lastPokemonId, this.pokemonRepository.getPokemon.bind(this.pokemonRepository), this.searchEl));
+        setNavigationControlsKeys(async () => this.pokedexHelper.callPreviousPokemonFn(this.currentPokemonid, this.lastPokemonId, this.pokemonRepository.getPokemon.bind(this.pokemonRepository), this.searchEl), async () => this.pokedexHelper.callNextPokemonFn(this.currentPokemonid, this.lastPokemonId, this.pokemonRepository.getPokemon.bind(this.pokemonRepository), this.searchEl));
     }
-    createElement(tag, cls, id) {
-        const element = document.createElement(tag);
-        if (cls) {
-            let arr = cls.split(" ");
-            arr.forEach((c) => element.classList.add(c));
+    async loadPokemon(pokemonIdentifier) {
+        try {
+            const pokemonData = await this.pokemonRepository.getPokemon(pokemonIdentifier);
+            if (!pokemonData) {
+                this.popupMessege.popup(`Pokémon não encontrado.`, true, true);
+                this.searchEl.value = "";
+                return;
+            }
+            return pokemonData;
         }
-        if (id)
-            element.id = id;
-        return element;
+        catch (erro) {
+            console.error(erro);
+            if (erro.message === `Erro ao buscar Pokémon com identificador "${pokemonIdentifier}"`) {
+                this.popupMessege.popup(`Pokémon não encontrado.`, true, true);
+                return;
+            }
+            this.popupMessege.popup(`Erro ao buscar Pokémon. Verifique sua conexão ou tente mais tarde.`, true, true);
+            this.searchEl.value = "";
+            return;
+        }
     }
-    get currentPkmid() {
-        return this._currentPkmId;
+    renderPokemon(pokemonData) {
+        this._currentPokemonId = pokemonData.id;
+        const pokemonType = pokemonData.types[0].type.name;
+        this.updatePokedexTop(pokemonData);
+        this.updatePokedexData(pokemonData, pokemonType);
+        if (!this.isSameType(pokemonType)) {
+            this.popupMessege.updateInfoBallonsColors(pokemonType);
+            document.body.style.setProperty("--pokemonTypeColor", `rgb(var(--${pokemonType}))`);
+        }
     }
-    get lastPkmId() {
-        return this._lastPkmId;
+    isSameType(type) {
+        if (type === this.lastPokemonType) {
+            return true;
+        }
+        else {
+            this.lastPokemonType = type;
+            return false;
+        }
     }
-    get lastPkmType() {
-        return this._lastPkmType;
+    updatePokedexTop(pokemonData) {
+        this.pokemonIdNumberEl.innerHTML = "#" + pokemonData.id.toString().padStart(3, "0");
+        this.pokemonImageEl.src = pokemonData.sprites.other.home.front_default;
     }
-    set currentPkmId(newId) {
-        this._currentPkmId = newId;
+    updatePokedexData(pokemonData, pokemonType) {
+        this.typesContainerEl.innerHTML = " ";
+        pokemonData.types.forEach((t, i) => {
+            const type = t.type.name;
+            let newTypeEl = createElement("span", "type");
+            if (i > 0) {
+                newTypeEl.style.backgroundColor = `rgb(var(--${type}))`;
+            }
+            newTypeEl.innerHTML = type;
+            this.typesContainerEl.appendChild(newTypeEl);
+        });
+        pokemonData.stats.forEach((s, i) => {
+            this.statNumberList[i].innerHTML = s.base_stat.toString().padStart(3, "0");
+            this.statInnerBarList[i].style.width = s.base_stat + `%`;
+            this.statOuterBarList[i].style.backgroundColor = `rgba(var(--${pokemonType}) / var(--alphaType))`;
+        });
     }
-    set lastPkmType(newType) {
-        this._lastPkmType = newType;
+    removeListeners() {
+        this.btnNextEl.removeEventListener("click", () => this.pokedexHelper.callNextPokemonFn(this.currentPokemonid, this.lastPokemonId, this.pokemonRepository.getPokemon, this.searchEl));
+        this.btnPrevEl.removeEventListener("click", () => this.pokedexHelper.callPreviousPokemonFn(this.currentPokemonid, this.lastPokemonId, this.pokemonRepository.getPokemon, this.searchEl));
+    }
+    get currentPokemonid() {
+        return this._currentPokemonId;
+    }
+    get lastPokemonId() {
+        return this._lastPokemonId;
+    }
+    get lastPokemonType() {
+        return this._lastPokemonType;
+    }
+    get pokemonRepository() {
+        return this._pokemonRepository;
+    }
+    get pokedexHelper() {
+        return this._pokedexHelper;
+    }
+    get popupMessege() {
+        return this._popup;
+    }
+    set currentPokemonId(newId) {
+        this._currentPokemonId = newId;
+    }
+    set lastPokemonType(newType) {
+        this._lastPokemonType = newType;
     }
 }

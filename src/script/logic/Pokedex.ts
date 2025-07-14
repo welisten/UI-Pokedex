@@ -1,35 +1,45 @@
-import Api from "../Api.js";
-import { setNavigationControlsKeys,} from "../appUtils.js";
-import { imagesSrc, PokemonType, typesColor } from "../Data.js";
+/** Proximas Implementações
+ *  - carregamento inicial dinâmico
+ *  - adição do nome do pokemon ao pokedexData
+ *  - desacloplar construindo uma pokedexBuilder
+ *  - ThemeManeger para controle de css inline
+ *  - atualizar animações para requestAnimationFrame
+ */
+
+import { setNavigationControlsKeys, PokedexHelper, createElement} from "../appUtils.js";
+import { imagesSrc, PokemonType } from "../Data.js";
 import { Pokemon } from "../Pokemon.js";
-import PopupAside from "../PopupAside.js";
+import {IPopup} from "../PopupAside.js"
+import { PokemonRepository } from "./PokemonRepository.js";
 
 export default class Pokedex {
-  private _currentPkmId: number;
-  private _lastPkmId: number = 1025;
-  private pokemonIdCache: Map<number, Pokemon> = new Map()
-  private pokemonNameCache: Map<string, Pokemon> = new Map()
-  private _lastPkmType: PokemonType | undefined
+  private _currentPokemonId: number;
+  private _lastPokemonId: number = 1025;
+  private _lastPokemonType: PokemonType | undefined
+  private _pokemonRepository: PokemonRepository = new PokemonRepository()
+  private _popup: IPopup
+  private _pokedexHelper: PokedexHelper
 
-  public readonly pokedex_El: HTMLDivElement = this.createElement("div", "", "pokedex");
-  public readonly controlers: HTMLDivElement = this.createElement("div", "", "controlers");
-  public readonly search_El: HTMLInputElement = this.createElement("input", "", "search");
-  public readonly pkmIdNumber_El: HTMLSpanElement = this.createElement("span", "", "number");
-  public readonly pkmImage_El: HTMLImageElement = this.createElement("img", "", "pokemon-image");
-  public readonly typesContainer_El: HTMLDivElement = this.createElement("div", "", "types");
-  public readonly baseStatsTitle_El: HTMLHeadingElement = this.createElement("h4", "", "base-stat");
-  public btnPrevEl: HTMLSpanElement = this.createElement("span", "controlers-btn btnPrev", "mainBtnPrev");
-  public btnNextEl: HTMLSpanElement = this.createElement("span", "controlers-btn btnNext", "mainBtnNext");
-  public statDescEl: HTMLDivElement[] = [];
-  public statNumberEl: HTMLDivElement[] = [];
-  public statInneBarEl: HTMLDivElement[] = [];
-  public statOuterBarEl: HTMLDivElement[] = [];
+  public readonly pokedexEl: HTMLDivElement = createElement("div", "", "pokedex");
+  public readonly controllers: HTMLDivElement = createElement("div", "", "controllers");
+  public readonly searchEl: HTMLInputElement = createElement("input", "", "search");
+  public readonly pokemonIdNumberEl: HTMLSpanElement = createElement("span", "", "number");
+  public readonly pokemonImageEl: HTMLImageElement = createElement("img", "", "pokemon-image");
+  public readonly typesContainerEl: HTMLDivElement = createElement("div", "", "types");
+  public readonly baseStatsTitleEl: HTMLHeadingElement = createElement("h4", "", "base-stat");
+  public readonly informationContainerEl = document.getElementById("informations");
+  public btnPrevEl: HTMLSpanElement = createElement("span", "controllers-btn btnPrev", "mainBtnPrev");
+  public btnNextEl: HTMLSpanElement = createElement("span", "controllers-btn btnNext", "mainBtnNext");
+  public statDescList: HTMLDivElement[] = [];
+  public statNumberList: HTMLDivElement[] = [];
+  public statInnerBarList: HTMLDivElement[] = [];
+  public statOuterBarList: HTMLDivElement[] = [];
 
-  constructor(initialId: number = 1) {
+  constructor(initialId: number = 1, popup:IPopup) {
     let aux = initialId
 
     if(initialId === 1){
-      this.lastPkmType = 'grass'
+      this.lastPokemonType = 'grass'
     }else{
       true 
       // Implementar nas proximas sprites
@@ -37,31 +47,26 @@ export default class Pokedex {
     if (initialId <= 0)
       aux = 1;
     
-    if (initialId > this.lastPkmId)
-      aux = this.lastPkmId;
-      
-    this._currentPkmId = aux;
+    if (initialId > this.lastPokemonId)
+      aux = this.lastPokemonId;
+
+    this._currentPokemonId = aux;
+    this._popup = popup
+    this._pokedexHelper = new PokedexHelper(this.popupMessege)
   }
 
   init(){
     this.buildPokedex("pokedexScreen")
     this.setPokedexElements()
-    PopupAside.buildnewPopup("instructions", "Procure pelo Pokemon desejado na barra de pesquisas")
-    PopupAside.buildnewPopup("instructions", "Voce também pode pesquisar através do número de identificação do Pokemon")
-    PopupAside.show()
+    this.popupMessege.popup("Procure pelo Pokemon desejado na barra de pesquisas")
+    this.popupMessege.popup("Voce também pode pesquisar através do número de identificação do Pokemon")
   }
 
   buildPokedex(containerId: string): void {
-    this.buildDisplay(containerId);
+    this.buildPkdexDisplay(containerId);
     this.buildPkdexControls(containerId);
   }
-  
-  setPokedexElements(): void {
-    this.setPkdexDisplayElements();
-    this.setPkdexControlsElements();
-  }
-
-  private buildDisplay(containerId: string):void {
+  private buildPkdexDisplay(containerId: string):void {
     const mainFather_EL = document.getElementById(containerId);
     
     if (!mainFather_EL){
@@ -69,230 +74,11 @@ export default class Pokedex {
     }
     
     const top_El = this.buildPkdexTopInterface()
-    const data_El = this.buildPkdexDataInterface()
+    const dataEl = this.buildPkdexDataInterface()
     
-    this.pokedex_El.append(top_El, data_El);
-    mainFather_EL.append(this.pokedex_El);
+    this.pokedexEl.append(top_El, dataEl);
+    mainFather_EL.append(this.pokedexEl);
   }
-
-  private buildPkdexDataInterface(): HTMLDivElement{
-    const data_El = this.createElement("div", "", "data");
-
-    const type1_El = this.createElement("span", "type");
-    const type2_El = this.createElement("span", "type");
-
-    type1_El.style.backgroundColor = `var(--pkmTypeColor)`;
-    type2_El.style.backgroundColor = `rgb(var(--poison))`;
-
-    type1_El.innerText = "grass"
-    type2_El.innerText = "poison"
-
-    this.typesContainer_El.append(type1_El, type2_El);
-    this.baseStatsTitle_El.style.color = `var(--pkmTypeColor)`;
-    this.baseStatsTitle_El.innerText = "base stats";
-
-    const stats_El = this.createElement("div", "", "stats");
-
-    for (let i = 0; i < 6; i++) {
-      let numberValue: string;
-      let stat: string;
-
-      switch (i + 1) {
-        case 1:
-          numberValue = "45";
-          stat = "HP";
-          break;
-        case 2:
-          numberValue = "49";
-          stat = "ATK";
-          break;
-        case 3:
-          numberValue = "49";
-          stat = "DEF";
-          break;
-        case 4:
-          numberValue = "65";
-          stat = "SATK";
-          break;
-        case 5:
-          numberValue = "65";
-          stat = "SDEF";
-          break;
-        case 6:
-          numberValue = "45";
-          stat = "SPD";
-          break;
-        default:
-          break;
-      }
-
-      let statRow_El = this.createElement("div", "stat-row");
-      let statRowDesc_El = this.createElement("div", "stat-desc");
-      let statRowNumber_El = this.createElement("div", "stat-number");
-      let statRowBar_El = this.createElement("div", "stat-bar");
-      let statRowBarOuter_El = this.createElement("div", "bar-outer");
-      let statRowBarInner_El = this.createElement("div", "bar-inner");
-
-      this.statDescEl.push(statRowDesc_El)
-      this.statNumberEl.push(statRowNumber_El)
-      this.statInneBarEl.push(statRowBarInner_El)
-      this.statOuterBarEl.push(statRowBarOuter_El)
-
-      statRowBarInner_El.style.width = numberValue! + "%";
-      statRowBarOuter_El.appendChild(statRowBarInner_El);
-      statRowBar_El.appendChild(statRowBarOuter_El);
-      statRowDesc_El.innerText = stat!;
-      statRowNumber_El.innerText = "0" + numberValue!;
-      statRow_El.append(statRowDesc_El, statRowNumber_El, statRowBar_El);
-      stats_El.append(statRow_El);
-    }
-
-    data_El.append(this.typesContainer_El, this.baseStatsTitle_El, stats_El);
-    return data_El
-  }
-
-  /**A construção da pokedex deve ser baseada no parâmetro initialId, passado pelo o usuário. Por isso, esse codigo
-   * precisa ser refatorado levando isso em consideração. Deve se verificar se o id inicial é diferente de 1 e assim
-   * decidir se haverá chamada pra API e a construção ser baseado em cima dos dados retornados. 
-   * 
-   * Outra opção mais robusta é SEMPRE fazer a rezição, independente se é a intanciação da classe Pokedex ou
-   * uma interação com a instância já concluida
-   */
-
-  private buildPkdexTopInterface(): HTMLDivElement{
-    const top_El = this.createElement("div", "", "top");
-
-    const topBar_El = this.createElement("div", "", "top-bar");
-    const searchBar_El = this.createElement("div", "searchBar");
-    this.search_El.setAttribute("type", "text");
-    this.search_El.setAttribute("value", "bulbasaur");
-    const glassIcon_El = this.createElement("i","fa-solid fa-magnifying-glass");
-    const pokeImagePlaceholder_El = this.createElement( "div", "", 'poke-image-placeholder');
-    this.pkmImage_El.src = imagesSrc.default;
-    this.pkmImage_El.alt = "bulbasaur";
-    this.pkmIdNumber_El.innerText = "#001";
-
-    searchBar_El.append(this.search_El, glassIcon_El);
-    topBar_El.append(searchBar_El, this.pkmIdNumber_El);
-    pokeImagePlaceholder_El.appendChild(this.pkmImage_El);
-    top_El.append(topBar_El, pokeImagePlaceholder_El);
-    return top_El
-  }
-
-
-  private setPkdexDisplayElements(): void { 
-    this.search_El.addEventListener("change", async (event) => {
-      const target = event.target as HTMLInputElement;
-      const pokemonIdentyfier = target.value;
-      
-      try{
-        this.validateSearchValue(pokemonIdentyfier)
-      } catch(e:any){
-        if(e.message === "Identificador fora do intervalo permitido"){
-          PopupAside.buildnewPopup(
-            "instructions",
-            `Os identificadores de Pokemon vão de <b alert>1</b> a <b alert>${this.lastPkmId}</b>. Selecione uma opção dentro do intervalo!`,
-            false,
-            true
-          )
-        }
-        return
-      }
-
-      const pokemonData: Pokemon | undefined = await this.getPokemon(pokemonIdentyfier);
-
-      if (!pokemonData) {
-        PopupAside.buildnewPopup("instructions", `Pokémon não encontrado.`, true, true)
-        target.value = "";
-        return;
-      }
-      
-
-      this._currentPkmId = pokemonData.id;
-      const pkmType = pokemonData.types[0].type.name as PokemonType
-      const mainColor: [number, number, number] = typesColor[pkmType];
-
-      this.updatePokedexTop(pokemonData)
-      this.updatePokedexData(pokemonData, pkmType)
-      if(!this.isSameType(pkmType)){
-        PopupAside.updateInfoBallonsColors(mainColor)
-        document.body.style.setProperty("--pkmTypeColor", `rgb(var(--${pkmType}))`)
-      }
-    });
-  }
-
-  private isSameType(type: PokemonType): boolean{
-    if(type === this.lastPkmType){
-      return true 
-    } else {
-      this.lastPkmType = type
-      return false
-    }
-  }
-
-  private async getPokemon(searchValue: string){
-    const trimmed = searchValue.trim()
-    const isPositiveInteger = /^\d+$/.test(trimmed)
-    
-    if(isPositiveInteger){
-      const id = parseInt(trimmed)
-      if(this.pokemonIdCache.has(id)){
-        return this.pokemonIdCache.get(id)
-      }
-    }else {
-      const name = trimmed.toLowerCase()
-      if(this.pokemonNameCache.has(name)){
-        return this.pokemonNameCache.get(name)
-      }
-    }
-
-    try{
-      const pokemon = await Api.getPokemon(trimmed)
-      if(!pokemon) return undefined
-      
-      this.pokemonIdCache.set(pokemon.id, pokemon)
-      this.pokemonNameCache.set(pokemon.name.toLowerCase(), pokemon)
-      return pokemon
-    }catch(error){
-      console.error("Erro ao buscar pokemon.", error)
-      return undefined
-    }
-  }
-  private updatePokedexTop(pokemonData: Pokemon): void {
-      this.pkmIdNumber_El.innerHTML = "#" + pokemonData.id.toString().padStart(3, "0");
-      this.pkmImage_El.src = pokemonData.sprites.other!.home.front_default ;
-  }
-  private updatePokedexData(pokemonData: Pokemon, pkmType: PokemonType): void { 
-    this.typesContainer_El.innerHTML = " ";
-    
-    pokemonData.types.forEach((t, i) => {
-      const type  = t.type.name     
-      let newTypeEl = this.createElement("span", "type");
-      
-      if(i>0) {
-        newTypeEl.style.backgroundColor = `rgb(var(--${type}))`;
-      }
-      
-      newTypeEl.innerHTML = type
-      this.typesContainer_El.appendChild(newTypeEl);
-    });
-    
-    pokemonData.stats.forEach((s, i) => {
-        this.statNumberEl[i].innerHTML = s.base_stat.toString().padStart(3, "0");
-        this.statInneBarEl[i].style.width = s.base_stat + `%`;
-        this.statOuterBarEl[i].style.backgroundColor = `rgba(var(--${pkmType}) / var(--alphaType))`;
-      });
-  }
-  private validateSearchValue(value:string){
-    const trimmed = value.trim()
-    const isPositiveInt = /^\d+$/.test(trimmed)
-    if(isPositiveInt){
-      if(parseInt(value) > this.lastPkmId || parseInt(value) < 1){
-        throw new Error("Identificador fora do intervalo permitido")
-      }
-    } 
-  };
-
   private buildPkdexControls(containerId: string): void {
     const mainFather_EL = document.getElementById(containerId);
 
@@ -300,64 +86,246 @@ export default class Pokedex {
       throw new Error("Elemento pai da pokedex não foi encontrado");
     }
 
-    const iconChevronLeft = this.createElement("i", "fa-solid fa-chevron-left");
-    const iconChevronRight = this.createElement( "i", "fa-solid fa-chevron-right");
+    const iconChevronLeft = createElement("i", "fa-solid fa-chevron-left");
+    const iconChevronRight = createElement( "i", "fa-solid fa-chevron-right");
 
     this.btnPrevEl.append(iconChevronLeft);
     this.btnNextEl.append(iconChevronRight);
-    this.controlers.append(this.btnPrevEl, this.btnNextEl);
-    mainFather_EL.append(this.controlers);
+    this.controllers.append(this.btnPrevEl, this.btnNextEl);
+    mainFather_EL.append(this.controllers);
+  }
+  /**A construção da pokedex deve ser baseada no parâmetro initialId, passado pelo o usuário. Por isso, esse codigo
+   * precisa ser refatorado levando isso em consideração. Deve se verificar se o id inicial é diferente de 1 e assim
+   * decidir se haverá chamada pra API e a construção ser baseado em cima dos dados retornados. 
+   * 
+   * Outra opção mais robusta é SEMPRE fazer a requizição, independente se é a intanciação da classe Pokedex ou
+   * uma interação com a instância já concluida
+   */
+  private buildPkdexTopInterface(): HTMLDivElement{
+    const top_El = createElement("div", "", "top");
+
+    const topBar_El = createElement("div", "", "top-bar");
+    const searchBar_El = createElement("div", "searchBar");
+    this.searchEl.setAttribute("type", "text");
+    this.searchEl.setAttribute("value", "bulbasaur");
+    const glassIcon_El = createElement("i","fa-solid fa-magnifying-glass");
+    const pokeImagePlaceholder_El = createElement( "div", "", 'poke-image-placeholder');
+    this.pokemonImageEl.src = imagesSrc.default;
+    this.pokemonImageEl.alt = "bulbasaur";
+    this.pokemonIdNumberEl.innerText = "#001";
+
+    searchBar_El.append(this.searchEl, glassIcon_El);
+    topBar_El.append(searchBar_El, this.pokemonIdNumberEl);
+    pokeImagePlaceholder_El.appendChild(this.pokemonImageEl);
+    top_El.append(topBar_El, pokeImagePlaceholder_El);
+    return top_El
+  }
+  private buildPkdexDataInterface(): HTMLDivElement{
+    const dataEl = createElement("div", "", "data");
+    
+    // Types
+    this.typesContainerEl.append(...this.pokedexHelper.buildTypes(["grass", "poison"]))
+    dataEl.append(this.typesContainerEl)
+    
+    // Base stats
+    this.baseStatsTitleEl.style.color = `var(--pokemonTypeColor)`;
+    this.baseStatsTitleEl.innerText = "base stats";
+
+    const statsEl = createElement("div", "", "stats");
+
+    const statsList = [
+      { stat: "HP", value: 45 },
+      { stat: "ATK", value: 49 },
+      { stat: "DEF", value: 49 },
+      { stat: "SATK", value: 65 },
+      { stat: "SDEF", value: 65 },
+      { stat: "SPD", value: 45 }
+    ]
+
+    statsList.forEach((s,i) => {
+      const statRowElements = this.pokedexHelper.buildStatRow(s.stat, s.value)
+      statsEl.append(statRowElements.row)
+      this.statDescList.push(statRowElements.desc)
+      this.statNumberList.push(statRowElements.number)
+      this.statInnerBarList.push(statRowElements.inneBar)
+      this.statOuterBarList.push(statRowElements.outerBar)
+    })
+
+    dataEl.append(this.baseStatsTitleEl, statsEl);
+    return dataEl
+  }
+
+
+  setPokedexElements(): void {
+    this.setPkdexDisplayElements();
+    this.setPkdexControlsElements();
+  }
+
+  private setPkdexDisplayElements(): void { 
+    this.searchEl.addEventListener("change", async (event) => {
+      const target = event.target as HTMLInputElement;
+      const pokemonIdentifier = target.value;
+      
+      //validação
+      try{
+        this.pokedexHelper.validateSearchValue(pokemonIdentifier, this.lastPokemonId)
+      } catch(e:any){
+        if(e.message === "Identificador fora do intervalo permitido"){
+          this.popupMessege.popup(
+                        `Os identificadores de Pokemon vão de <b alert>1</b> a <b alert>${this.lastPokemonId}</b>. Selecione uma opção dentro do intervalo!`,
+            false,
+            true
+          )
+          target.value = "";
+        }
+        return
+      }
+
+      const pokemonData = await this.loadPokemon(pokemonIdentifier)
+      if(pokemonData){
+        this.renderPokemon(pokemonData)
+      }
+    });
   }
   private setPkdexControlsElements(): void {
-    const callPreviousPkmFn =  async () => {
-        this._currentPkmId = this._currentPkmId  > 1 ? this._currentPkmId - 1 : this.lastPkmId;
-        
-        const pokemonData = await this.getPokemon(this._currentPkmId.toString());
-        const eventoChange = new Event("change");
-        this.search_El.value = pokemonData!.name;
-        this.search_El.dispatchEvent(eventoChange);
-    };
-    const callNextPkmFn = async () => {
-
-        this._currentPkmId = this._currentPkmId < this.lastPkmId ? this._currentPkmId + 1 : 1
-        const pokemonData = await this.getPokemon(this._currentPkmId.toString());
-        const eventoChange = new Event("change");
-        this.search_El.value = pokemonData!.name;
-        this.search_El.dispatchEvent(eventoChange);
+    this.btnNextEl.addEventListener(
+      "click",
+      async () => await this.pokedexHelper.callNextPokemonFn(
+        this.currentPokemonid,
+        this.lastPokemonId,
+        this.pokemonRepository.getPokemon.bind(this.pokemonRepository),
+        this.searchEl
+      )
+  );
+    this.btnPrevEl.addEventListener("click",
+      async () => this.pokedexHelper.callPreviousPokemonFn(
+        this.currentPokemonid,
+        this.lastPokemonId,
+        this.pokemonRepository.getPokemon.bind(this.pokemonRepository),
+        this.searchEl
+      )
+    )
+    setNavigationControlsKeys(
+      async () => this.pokedexHelper.callPreviousPokemonFn(
+        this.currentPokemonid,
+        this.lastPokemonId,
+        this.pokemonRepository.getPokemon.bind(this.pokemonRepository),
+        this.searchEl
+      ),
+      async () => this.pokedexHelper.callNextPokemonFn(
+        this.currentPokemonid,
+        this.lastPokemonId,
+        this.pokemonRepository.getPokemon.bind(this.pokemonRepository),
+        this.searchEl
+      )
+    )
+  }
+  private async loadPokemon(pokemonIdentifier: string){
+    try{
+      const pokemonData: Pokemon | undefined = await this.pokemonRepository.getPokemon(pokemonIdentifier);
+      if (!pokemonData) {
+        this.popupMessege.popup(`Pokémon não encontrado.`, true, true)
+        this.searchEl.value = "";
+        return;
+      }
+      return pokemonData
+    } catch(erro: any){
+      console.error(erro)
+      if(erro.message === `Erro ao buscar Pokémon com identificador "${pokemonIdentifier}"`){
+        this.popupMessege.popup(`Pokémon não encontrado.`, true, true)
+        return
+      }
+      this.popupMessege.popup(
+                `Erro ao buscar Pokémon. Verifique sua conexão ou tente mais tarde.`,
+        true,
+        true
+      )
+      this.searchEl.value = "";
+      return;
     }
-
-    this.btnNextEl.addEventListener("click", callNextPkmFn );
-    this.btnPrevEl.addEventListener("click", callPreviousPkmFn)
-    setNavigationControlsKeys(callPreviousPkmFn, callNextPkmFn)
   }
-  private createElement<T extends keyof HTMLElementTagNameMap>(
-    tag: T,
-    cls?: string,
-    id?: string
-  ) {
-    const element = document.createElement(tag);
-    if (cls) {
-      let arr = cls.split(" ");
-      arr.forEach((c) => element.classList.add(c));
+  private renderPokemon(pokemonData: Pokemon){
+      this._currentPokemonId = pokemonData.id;
+      const pokemonType = pokemonData.types[0].type.name as PokemonType
+      
+      this.updatePokedexTop(pokemonData)
+      this.updatePokedexData(pokemonData, pokemonType)
+      
+      if(!this.isSameType(pokemonType)){
+        this.popupMessege.updateInfoBallonsColors(pokemonType)
+        document.body.style.setProperty("--pokemonTypeColor", `rgb(var(--${pokemonType}))`)
+      }
+  }
+  private isSameType(type: PokemonType): boolean{
+    if(type === this.lastPokemonType){
+      return true 
+    } else {
+      this.lastPokemonType = type
+      return false
     }
-    if (id) element.id = id;
-    return element;
+  }
+  private updatePokedexTop(pokemonData: Pokemon): void {
+      this.pokemonIdNumberEl.innerHTML = "#" + pokemonData.id.toString().padStart(3, "0");
+      this.pokemonImageEl.src = pokemonData.sprites.other!.home.front_default ;
+  }
+  private updatePokedexData(pokemonData: Pokemon, pokemonType: PokemonType): void { 
+    this.typesContainerEl.innerHTML = " ";
+    
+    pokemonData.types.forEach((t, i) => {
+      const type  = t.type.name     
+      let newTypeEl = createElement("span", "type");
+      
+      if(i>0) {
+        newTypeEl.style.backgroundColor = `rgb(var(--${type}))`;
+      }
+      
+      newTypeEl.innerHTML = type
+      this.typesContainerEl.appendChild(newTypeEl);
+    });
+    
+    pokemonData.stats.forEach((s, i) => {
+        this.statNumberList[i].innerHTML = s.base_stat.toString().padStart(3, "0");
+        this.statInnerBarList[i].style.width = s.base_stat + `%`;
+        this.statOuterBarList[i].style.backgroundColor = `rgba(var(--${pokemonType}) / var(--alphaType))`;
+    });
+  }
+  private removeListeners():void{
+    this.btnNextEl.removeEventListener("click", () => this.pokedexHelper.callNextPokemonFn(
+        this.currentPokemonid,
+        this.lastPokemonId,
+        this.pokemonRepository.getPokemon,
+        this.searchEl
+    ) )
+    this.btnPrevEl.removeEventListener("click", () => this.pokedexHelper.callPreviousPokemonFn(
+        this.currentPokemonid,
+        this.lastPokemonId,
+        this.pokemonRepository.getPokemon,
+        this.searchEl
+    ) )
   }
 
-
-  get currentPkmid(): number {
-    return this._currentPkmId;
+  get currentPokemonid(): number {
+    return this._currentPokemonId;
   }
-  get lastPkmId(): number {
-    return this._lastPkmId;
+  get lastPokemonId(): number {
+    return this._lastPokemonId;
   }
-  get lastPkmType():PokemonType|undefined {
-    return this._lastPkmType
+  get lastPokemonType():PokemonType|undefined {
+    return this._lastPokemonType
   }
-  set currentPkmId(newId: number) {
-    this._currentPkmId = newId;
+  get pokemonRepository():PokemonRepository{
+      return this._pokemonRepository
   }
-  set lastPkmType(newType:PokemonType){
-    this._lastPkmType = newType
+  get pokedexHelper():PokedexHelper{
+      return this._pokedexHelper
+  }
+  get popupMessege(): IPopup{
+    return this._popup
+  }
+  set currentPokemonId(newId: number) {
+    this._currentPokemonId = newId;
+  }
+  set lastPokemonType(newType:PokemonType){
+    this._lastPokemonType = newType
   }
 }
