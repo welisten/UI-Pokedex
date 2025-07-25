@@ -1,13 +1,17 @@
-import { createElement } from "./appUtils.js";
+import { createElement } from "./appUtils";
 export class PopupAsideStatic {
+    static time = 500;
+    static _infoBallons_El = [];
+    static _ballonsMap = new Map();
     static popUp(fatherContainer, msg, isTemporary = false, isAlert = false) {
         const popupBallon = this.buildPopup(fatherContainer, msg, isAlert);
         this.animatePopup(popupBallon);
         this.configurePopupExit(popupBallon, fatherContainer, isTemporary);
+        return popupBallon;
     }
     static buildPopup(fatherContainer, msg, isAlert = false) {
-        if (!fatherContainer) {
-            throw new Error("Pai para o popup não encontrado, parâmetro null ou undefined.");
+        if (!document.body.contains(fatherContainer)) {
+            throw new Error("Pai para o popup fornecido não foi encontrado no documento.");
         }
         const ballon = createElement('div', 'info-ballon');
         const paragraf = createElement('p');
@@ -46,7 +50,7 @@ export class PopupAsideStatic {
             const closeBtn = createElement('a', 'btn ballon-instruct-btn closeBtn');
             closeBtn.append(closeIcon);
             ballon.append(closeBtn);
-            this.setPopupCloseBtns(fatherContainer);
+            this.setPopupCloseBtns(ballon);
         }
         else {
             setTimeout(() => {
@@ -62,7 +66,7 @@ export class PopupAsideStatic {
     }
     static updateInfoBallonsColors(pkmType) {
         const ballonsInstrucEl = document.querySelectorAll(".info-ballon:not([alert])");
-        if (!ballonsInstrucEl) {
+        if (ballonsInstrucEl.length === 0) {
             return;
         }
         ballonsInstrucEl.forEach((ballon) => {
@@ -70,17 +74,9 @@ export class PopupAsideStatic {
         });
     }
     static setPopupCloseBtns(fatherContainer) {
-        if (!fatherContainer) {
-            throw new Error("Pai principal de Popup não encontrado. Não foi possível configurar os botões de fechar PopUp !");
-        }
-        const closeBtnEl = fatherContainer.querySelectorAll('.closeBtn');
-        if (!closeBtnEl)
-            throw new Error("Botões de fechar elementos dessa pagina não foram encontrados");
-        closeBtnEl.forEach((btn, i) => {
-            const parent = btn.parentNode;
-            btn.addEventListener('click', (e) => {
-                requestAnimationFrame((timestamp) => this.takeBallonOut(timestamp, parent));
-            });
+        const closeBtnEl = fatherContainer.querySelector('.closeBtn');
+        closeBtnEl.addEventListener('click', (e) => {
+            requestAnimationFrame((timestamp) => this.takeBallonOut(timestamp, fatherContainer));
         });
     }
     static takeBallonOut(step, ballon) {
@@ -103,27 +99,26 @@ export class PopupAsideStatic {
     static get infoBallons_El() {
         return this._infoBallons_El;
     }
-    static set infoBallons_El(newInfoBallons) {
-        this._infoBallons_El = newInfoBallons;
-    }
     static get ballonsMap() {
         return this._ballonsMap;
     }
+    static set infoBallons_El(newInfoBallons) {
+        this._infoBallons_El = newInfoBallons;
+    }
 }
-PopupAsideStatic.time = 500;
-PopupAsideStatic._infoBallons_El = [];
-PopupAsideStatic._ballonsMap = new Map();
+// implementar todos os metodos da classe estática para facilitar testes
 export class PopUpAdapter {
+    _fatherContainer;
     constructor(fatherContainer) {
         this._fatherContainer = fatherContainer;
-    }
-    get fatherContainer() {
-        return this._fatherContainer;
     }
     popup(msg, isTemporary = false, isAlert = false) {
         PopupAsideStatic.popUp(this.fatherContainer, msg, isTemporary, isAlert);
     }
     updateInfoBallonsColors(pkmType) {
         PopupAsideStatic.updateInfoBallonsColors(pkmType);
+    }
+    get fatherContainer() {
+        return this._fatherContainer;
     }
 }

@@ -3,13 +3,11 @@
  *  - Evitar expanções infinitas
  *  - Injeção de API
  */
-import Api from "../Api.js";
-import { RepositoryHelper } from "../appUtils.js";
+import Api from "../Api";
+import { RepositoryHelper } from "../appUtils";
 export class PokemonRepository {
-    constructor() {
-        this._pokemonIdCache = new Map();
-        this._pokemonNameCache = new Map();
-    }
+    _pokemonIdCache = new Map();
+    _pokemonNameCache = new Map();
     async getPokemon(searchValue) {
         const identifier = searchValue.trim();
         const cached = this.getFromCache(identifier);
@@ -18,7 +16,7 @@ export class PokemonRepository {
         try {
             return await this.fetchFromAPI(identifier);
         }
-        catch (error) {
+        catch {
             throw new Error(`Erro ao buscar Pokémon com identificador "${searchValue}"`);
         }
     }

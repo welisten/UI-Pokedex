@@ -19,6 +19,6 @@ const typesColor = {
     "dragon": [112, 55, 255]
 };
 const imagesSrc = {
-    default: "../dist/img/defautImage.png"
+    default: "./img/defautImage.png"
 };
 export { typesColor, imagesSrc };

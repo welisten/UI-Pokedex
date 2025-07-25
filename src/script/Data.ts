@@ -42,7 +42,7 @@ type ImageName =
     | "default" ;
 
 const imagesSrc: Record<ImageName, string> = {
-    default: "../dist/img/defautImage.png"
+    default: "./img/defautImage.png"
 }
 
 export {

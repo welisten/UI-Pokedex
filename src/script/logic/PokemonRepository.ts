@@ -4,9 +4,9 @@
  *  - Injeção de API
  */
 
-import Api from "../Api.js";
-import { RepositoryHelper } from "../appUtils.js";
-import { Pokemon } from "../Pokemon.js";
+import Api from "../Api";
+import { RepositoryHelper } from "../appUtils";
+import { Pokemon } from "../Pokemon";
 
 export class PokemonRepository{
     private _pokemonIdCache: Map<number, Pokemon> = new Map()
@@ -20,7 +20,7 @@ export class PokemonRepository{
 
         try{
           return await this.fetchFromAPI(identifier)
-        }catch(error){
+        }catch{
           throw new Error(`Erro ao buscar Pokémon com identificador "${searchValue}"`)
         }
     }

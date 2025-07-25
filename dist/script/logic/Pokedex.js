@@ -9,23 +9,27 @@ import { setNavigationControlsKeys, PokedexHelper, createElement } from "../appU
 import { imagesSrc } from "../Data.js";
 import { PokemonRepository } from "./PokemonRepository.js";
 export default class Pokedex {
+    _currentPokemonId;
+    _lastPokemonId = 1025;
+    _lastPokemonType;
+    _pokemonRepository = new PokemonRepository();
+    _popup;
+    _pokedexHelper;
+    pokedexEl = createElement("div", "", "pokedex");
+    controllers = createElement("div", "", "controllers");
+    searchEl = createElement("input", "", "search");
+    pokemonIdNumberEl = createElement("span", "", "number");
+    pokemonImageEl = createElement("img", "", "pokemon-image");
+    typesContainerEl = createElement("div", "", "types");
+    baseStatsTitleEl = createElement("h4", "", "base-stat");
+    informationContainerEl = document.getElementById("informations");
+    btnPrevEl = createElement("span", "controllers-btn btnPrev", "mainBtnPrev");
+    btnNextEl = createElement("span", "controllers-btn btnNext", "mainBtnNext");
+    statDescList = [];
+    statNumberList = [];
+    statInnerBarList = [];
+    statOuterBarList = [];
     constructor(initialId = 1, popup) {
-        this._lastPokemonId = 1025;
-        this._pokemonRepository = new PokemonRepository();
-        this.pokedexEl = createElement("div", "", "pokedex");
-        this.controllers = createElement("div", "", "controllers");
-        this.searchEl = createElement("input", "", "search");
-        this.pokemonIdNumberEl = createElement("span", "", "number");
-        this.pokemonImageEl = createElement("img", "", "pokemon-image");
-        this.typesContainerEl = createElement("div", "", "types");
-        this.baseStatsTitleEl = createElement("h4", "", "base-stat");
-        this.informationContainerEl = document.getElementById("informations");
-        this.btnPrevEl = createElement("span", "controllers-btn btnPrev", "mainBtnPrev");
-        this.btnNextEl = createElement("span", "controllers-btn btnNext", "mainBtnNext");
-        this.statDescList = [];
-        this.statNumberList = [];
-        this.statInnerBarList = [];
-        this.statOuterBarList = [];
         let aux = initialId;
         if (initialId === 1) {
             this.lastPokemonType = 'grass';

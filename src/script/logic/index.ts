@@ -1,5 +1,6 @@
-import { IPopup, PopUpAdapter } from "../PopupAside.js";
-import Pokedex from "./Pokedex.js";
+import { IPopup, PopUpAdapter } from "../PopupAside";
+import Pokedex from "./Pokedex";
+import "./../../styles/index.scss"
 
 const informationsContainer: HTMLElement | null = document.getElementById("informations") 
 

@@ -1,6 +1,6 @@
 export default {
 	preset: "ts-jest",
-	testEnvironment: "node",
+	testEnvironment: "jsdom",
 	testMatch: ["**/*.test.ts"],
 	coveragePathIgnorePatterns: ["node_modules", "dist"],
     transform: {},

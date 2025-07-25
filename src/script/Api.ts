@@ -8,11 +8,16 @@
  *  - tempo de timeout: se a requisição travar, o fetch fica indefinidamente aberto.
  *     seria interessante ter um timeout controlado.
  */
-import { Pokemon } from "./Pokemon"
+import { Pokemon } from "./Pokemon.js"
 
 export default class Api {
     private static url: string = 'https://pokeapi.co/api/v2/pokemon/'
-    
+
+    static async getPokemon(userPokemonName: string){
+        const apiPokemonName = this.handleDoubleName(userPokemonName)
+        const pokemonData = await this.fetchApi(apiPokemonName)
+        return pokemonData
+    }
 
     private static async fetchApi(pokemonName:string): Promise<Pokemon>{
         try{
@@ -25,12 +30,6 @@ export default class Api {
         } catch(erro: any) {
             throw new Error(`Não foi possível recuperar o pokemon ${pokemonName} da API:<br>${erro.message}`)
         }
-    }
-
-    static async getPokemon(userPokemonName: string){
-        const apiPokemonName = this.handleDoubleName(userPokemonName)
-        const pokemonData = await this.fetchApi(apiPokemonName)
-        return pokemonData
     }
     
     private static handleDoubleName(name: string){

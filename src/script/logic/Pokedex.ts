@@ -6,11 +6,11 @@
  *  - atualizar animações para requestAnimationFrame
  */
 
-import { setNavigationControlsKeys, PokedexHelper, createElement} from "../appUtils.js";
-import { imagesSrc, PokemonType } from "../Data.js";
-import { Pokemon } from "../Pokemon.js";
-import {IPopup} from "../PopupAside.js"
-import { PokemonRepository } from "./PokemonRepository.js";
+import { setNavigationControlsKeys, PokedexHelper, createElement} from "../appUtils";
+import { imagesSrc, PokemonType } from "../Data";
+import { Pokemon } from "../Pokemon";
+import {IPopup} from "../PopupAside"
+import { PokemonRepository } from "./PokemonRepository";
 
 export default class Pokedex {
   private _currentPokemonId: number;
@@ -34,6 +34,24 @@ export default class Pokedex {
   public statNumberList: HTMLDivElement[] = [];
   public statInnerBarList: HTMLDivElement[] = [];
   public statOuterBarList: HTMLDivElement[] = [];
+
+  private prevClickHandler: EventListener = async () => {
+    await this.pokedexHelper.callPreviousPokemonFn(
+      this.currentPokemonId,
+      this.lastPokemonId,
+      this.pokemonRepository.getPokemon,
+      this.searchEl
+    )
+  }
+
+  private nextClickHandler: EventListener = async () => {
+    await this.pokedexHelper.callNextPokemonFn(
+      this.currentPokemonId,
+      this.lastPokemonId,
+      this.pokemonRepository.getPokemon,
+      this.searchEl
+    ) 
+  }
 
   constructor(initialId: number = 1, popup:IPopup) {
     let aux = initialId
@@ -66,6 +84,7 @@ export default class Pokedex {
     this.buildPkdexDisplay(containerId);
     this.buildPkdexControls(containerId);
   }
+
   private buildPkdexDisplay(containerId: string):void {
     const mainFather_EL = document.getElementById(containerId);
     
@@ -79,6 +98,7 @@ export default class Pokedex {
     this.pokedexEl.append(top_El, dataEl);
     mainFather_EL.append(this.pokedexEl);
   }
+  
   private buildPkdexControls(containerId: string): void {
     const mainFather_EL = document.getElementById(containerId);
 
@@ -94,6 +114,7 @@ export default class Pokedex {
     this.controllers.append(this.btnPrevEl, this.btnNextEl);
     mainFather_EL.append(this.controllers);
   }
+
   /**A construção da pokedex deve ser baseada no parâmetro initialId, passado pelo o usuário. Por isso, esse codigo
    * precisa ser refatorado levando isso em consideração. Deve se verificar se o id inicial é diferente de 1 e assim
    * decidir se haverá chamada pra API e a construção ser baseado em cima dos dados retornados. 
@@ -172,7 +193,7 @@ export default class Pokedex {
       } catch(e:any){
         if(e.message === "Identificador fora do intervalo permitido"){
           this.popupMessege.popup(
-                        `Os identificadores de Pokemon vão de <b alert>1</b> a <b alert>${this.lastPokemonId}</b>. Selecione uma opção dentro do intervalo!`,
+            `Os identificadores de Pokemon vão de <b alert>1</b> a <b alert>${this.lastPokemonId}</b>. Selecione uma opção dentro do intervalo!`,
             false,
             true
           )
@@ -188,38 +209,25 @@ export default class Pokedex {
     });
   }
   private setPkdexControlsElements(): void {
-    this.btnNextEl.addEventListener(
-      "click",
-      async () => await this.pokedexHelper.callNextPokemonFn(
-        this.currentPokemonid,
-        this.lastPokemonId,
-        this.pokemonRepository.getPokemon.bind(this.pokemonRepository),
-        this.searchEl
-      )
-  );
-    this.btnPrevEl.addEventListener("click",
-      async () => this.pokedexHelper.callPreviousPokemonFn(
-        this.currentPokemonid,
-        this.lastPokemonId,
-        this.pokemonRepository.getPokemon.bind(this.pokemonRepository),
-        this.searchEl
-      )
-    )
+    this.btnNextEl.addEventListener( "click", this.nextClickHandler);
+    this.btnPrevEl.addEventListener( "click", this.prevClickHandler)
+
     setNavigationControlsKeys(
       async () => this.pokedexHelper.callPreviousPokemonFn(
-        this.currentPokemonid,
+        this.currentPokemonId,
         this.lastPokemonId,
         this.pokemonRepository.getPokemon.bind(this.pokemonRepository),
         this.searchEl
       ),
       async () => this.pokedexHelper.callNextPokemonFn(
-        this.currentPokemonid,
+        this.currentPokemonId,
         this.lastPokemonId,
         this.pokemonRepository.getPokemon.bind(this.pokemonRepository),
         this.searchEl
       )
     )
   }
+
   private async loadPokemon(pokemonIdentifier: string){
     try{
       const pokemonData: Pokemon | undefined = await this.pokemonRepository.getPokemon(pokemonIdentifier);
@@ -233,10 +241,11 @@ export default class Pokedex {
       console.error(erro)
       if(erro.message === `Erro ao buscar Pokémon com identificador "${pokemonIdentifier}"`){
         this.popupMessege.popup(`Pokémon não encontrado.`, true, true)
+        this.searchEl.value = "";
         return
       }
       this.popupMessege.popup(
-                `Erro ao buscar Pokémon. Verifique sua conexão ou tente mais tarde.`,
+        `Erro ao buscar Pokémon. Verifique sua conexão ou tente mais tarde.`,
         true,
         true
       )
@@ -275,7 +284,7 @@ export default class Pokedex {
       const type  = t.type.name     
       let newTypeEl = createElement("span", "type");
       
-      if(i>0) {
+      if(i>0) { // se houver um segundo tipo, atualiza a cor
         newTypeEl.style.backgroundColor = `rgb(var(--${type}))`;
       }
       
@@ -290,21 +299,11 @@ export default class Pokedex {
     });
   }
   private removeListeners():void{
-    this.btnNextEl.removeEventListener("click", () => this.pokedexHelper.callNextPokemonFn(
-        this.currentPokemonid,
-        this.lastPokemonId,
-        this.pokemonRepository.getPokemon,
-        this.searchEl
-    ) )
-    this.btnPrevEl.removeEventListener("click", () => this.pokedexHelper.callPreviousPokemonFn(
-        this.currentPokemonid,
-        this.lastPokemonId,
-        this.pokemonRepository.getPokemon,
-        this.searchEl
-    ) )
+    this.btnNextEl.removeEventListener("click", this.nextClickHandler)
+    this.btnPrevEl.removeEventListener("click", this.prevClickHandler)
   }
 
-  get currentPokemonid(): number {
+  get currentPokemonId(): number {
     return this._currentPokemonId;
   }
   get lastPokemonId(): number {

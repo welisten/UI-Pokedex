@@ -1,20 +1,29 @@
+let navigationControlsHandler = null;
 export function setNavigationControlsKeys(callPreviousPokemonFn, callNextPokemonFn) {
+    navigationControlsHandler = (e) => controlsKeysCallback(e, callPreviousPokemonFn, callNextPokemonFn);
+    document.addEventListener("keydown", navigationControlsHandler);
+}
+export function removeControlsKeysEvent(callPreviousPokemonFn, callNextPokemonFn) {
+    if (navigationControlsHandler) {
+        document.removeEventListener("keydown", navigationControlsHandler);
+        navigationControlsHandler = null;
+    }
+}
+function controlsKeysCallback(e, callPreviousPokemonFn, callNextPokemonFn) {
     const pokedex = document.getElementById("pokedex");
-    document.addEventListener("keydown", (e) => {
-        if (!pokedex) {
-            return;
-        }
-        switch (e.key) {
-            case 'ArrowRight':
-                callNextPokemonFn();
-                break;
-            case 'ArrowLeft':
-                callPreviousPokemonFn();
-                break;
-            default:
-                break;
-        }
-    });
+    if (!pokedex) {
+        return;
+    }
+    switch (e.key) {
+        case 'ArrowRight':
+            callNextPokemonFn();
+            break;
+        case 'ArrowLeft':
+            callPreviousPokemonFn();
+            break;
+        default:
+            break;
+    }
 }
 export function createElement(tag, cls, id) {
     const element = document.createElement(tag);
@@ -27,6 +36,7 @@ export function createElement(tag, cls, id) {
     return element;
 }
 export class PokedexHelper {
+    popupMessege;
     constructor(popup) {
         this.popupMessege = popup;
     }
@@ -38,7 +48,7 @@ export class PokedexHelper {
         const statRowBarInnerEl = createElement("div", "bar-inner");
         const statRowBarOuterEl = createElement("div", "bar-outer");
         statRowDescEl.innerText = statName;
-        statRowNumberEl.innerText = statValue.toString().padStart(3, '3');
+        statRowNumberEl.innerText = statValue.toString().padStart(3, '0');
         statRowBarInnerEl.style.width = `${statValue}%`;
         statRowBarOuterEl.appendChild(statRowBarInnerEl);
         statRowBarEl.appendChild(statRowBarOuterEl);
@@ -92,7 +102,7 @@ export class PokedexHelper {
             search.dispatchEvent(eventoChange);
         }
         catch (erro) {
-            console.log(erro);
+            console.error(erro);
             this.popupMessege.popup(`Erro ao buscar Pokémon. Verifique sua conexão ou tente mais tarde.`, true, true);
             return;
         }

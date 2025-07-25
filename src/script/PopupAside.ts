@@ -1,5 +1,5 @@
-import { createElement } from "./appUtils.js"
-import { PokemonType } from "./Data.js"
+import { createElement } from "./appUtils"
+import { PokemonType } from "./Data"
 
 export interface IPopup {
     fatherContainer: HTMLElement,
@@ -17,15 +17,17 @@ export class PopupAsideStatic{
     private static _ballonsMap: Map<HTMLDivElement, number> = new Map()
 
 
-    static popUp(fatherContainer:HTMLElement, msg: string, isTemporary: boolean = false, isAlert:boolean = false){
+    static popUp(fatherContainer:HTMLElement, msg: string, isTemporary: boolean = false, isAlert:boolean = false): HTMLDivElement {
         const popupBallon = this.buildPopup(fatherContainer, msg, isAlert)
         this.animatePopup(popupBallon)
         this.configurePopupExit(popupBallon, fatherContainer, isTemporary)
+        return popupBallon
     }
 
     private static buildPopup(fatherContainer:HTMLElement, msg: string, isAlert:boolean = false): HTMLDivElement{
-        if(!fatherContainer){
-            throw new Error("Pai para o popup não encontrado, parâmetro null ou undefined.") 
+        
+        if(!document.body.contains(fatherContainer)){
+            throw new Error("Pai para o popup fornecido não foi encontrado no documento.") 
         }
 
         const ballon = createElement('div', 'info-ballon')
@@ -74,7 +76,7 @@ export class PopupAsideStatic{
             const closeBtn = createElement('a', 'btn ballon-instruct-btn closeBtn')
             closeBtn.append(closeIcon)
             ballon.append(closeBtn)
-            this.setPopupCloseBtns(fatherContainer)
+            this.setPopupCloseBtns(ballon)
         } else {
             setTimeout(() => {
                 requestAnimationFrame((timestamp => this.takeBallonOut(timestamp, ballon)))
@@ -92,7 +94,7 @@ export class PopupAsideStatic{
 
     static updateInfoBallonsColors(pkmType: PokemonType){
         const ballonsInstrucEl: NodeListOf<HTMLDivElement> = document.querySelectorAll(".info-ballon:not([alert])")
-        if(!ballonsInstrucEl){
+        if(ballonsInstrucEl.length === 0){
             return
         }
         ballonsInstrucEl.forEach((ballon) => {
@@ -100,21 +102,10 @@ export class PopupAsideStatic{
         });
     }
 
-    private static setPopupCloseBtns(fatherContainer: HTMLElement):void{ 
-        
-        if(!fatherContainer){
-            throw new Error("Pai principal de Popup não encontrado. Não foi possível configurar os botões de fechar PopUp !");
-        }
-
-        const closeBtnEl: NodeListOf<HTMLAnchorElement> = fatherContainer.querySelectorAll('.closeBtn')
-        if(!closeBtnEl)
-            throw new Error("Botões de fechar elementos dessa pagina não foram encontrados")
-
-        closeBtnEl.forEach((btn, i) => {
-            const parent = btn.parentNode as HTMLDivElement
-            btn.addEventListener('click', (e) => {
-                requestAnimationFrame((timestamp) => this.takeBallonOut(timestamp, parent))
-            })
+    private static setPopupCloseBtns(fatherContainer: HTMLDivElement):void{ 
+        const closeBtnEl: HTMLAnchorElement | null = fatherContainer.querySelector('.closeBtn')
+        closeBtnEl!.addEventListener('click', (e) => {
+                requestAnimationFrame((timestamp) => this.takeBallonOut(timestamp, fatherContainer))
         })
     }
 
@@ -142,29 +133,31 @@ export class PopupAsideStatic{
     static get infoBallons_El (): HTMLDivElement[] {
         return this._infoBallons_El!
     }
-
-    static set infoBallons_El (newInfoBallons: HTMLDivElement[]){
-        this._infoBallons_El = newInfoBallons
-    }
-
     static get ballonsMap(): Map<HTMLDivElement, number>{
         return this._ballonsMap
     }
+    static set infoBallons_El (newInfoBallons: HTMLDivElement[]){
+        this._infoBallons_El = newInfoBallons
+    }
 }
 
+// implementar todos os metodos da classe estática para facilitar testes
 export class PopUpAdapter implements IPopup {
     private _fatherContainer: HTMLElement
+   
     constructor(fatherContainer: HTMLElement){
         this._fatherContainer = fatherContainer
     }
-    get fatherContainer(): HTMLElement{
-        return this._fatherContainer
-    }
+
     popup(msg: string, isTemporary: boolean = false, isAlert:boolean = false){
         PopupAsideStatic.popUp(this.fatherContainer, msg, isTemporary, isAlert)
     }
 
     updateInfoBallonsColors(pkmType: PokemonType){
      PopupAsideStatic.updateInfoBallonsColors(pkmType)  
+    }
+
+    get fatherContainer(): HTMLElement{
+        return this._fatherContainer
     }
 }
