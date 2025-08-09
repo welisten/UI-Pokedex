@@ -134,7 +134,7 @@ export class PokedexHelper{
     ){
         try{
             currentId = currentId < lastPokemonId ? currentId + 1 : 1
-            const pokemonData =await getPokemon(currentId.toString()) as Pokemon | undefined
+            const pokemonData = await getPokemon(currentId.toString()) as Pokemon | undefined
             const eventoChange = new Event("change");
             search.value = pokemonData!.name;
             search.dispatchEvent(eventoChange);

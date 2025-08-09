@@ -17,15 +17,15 @@ export class PokemonRepository{
         const identifier = searchValue.trim()
         const cached = this.getFromCache(identifier)
         if(cached) return cached
-
+        
         try{
           return await this.fetchFromAPI(identifier)
         }catch{
           throw new Error(`Erro ao buscar Pokémon com identificador "${searchValue}"`)
         }
-    }
-    
-    private getFromCache(identifier: string): Pokemon | undefined {
+      }
+      
+      private getFromCache(identifier: string): Pokemon | undefined {
       const isPositiveInteger = RepositoryHelper.isPositiveInteger(identifier)
       if(isPositiveInteger){
         const id = parseInt(identifier)

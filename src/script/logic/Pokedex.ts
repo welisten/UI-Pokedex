@@ -39,7 +39,7 @@ export default class Pokedex {
     await this.pokedexHelper.callPreviousPokemonFn(
       this.currentPokemonId,
       this.lastPokemonId,
-      this.pokemonRepository.getPokemon,
+      this.pokemonRepository.getPokemon.bind(this.pokemonRepository),
       this.searchEl
     )
   }
@@ -48,7 +48,7 @@ export default class Pokedex {
     await this.pokedexHelper.callNextPokemonFn(
       this.currentPokemonId,
       this.lastPokemonId,
-      this.pokemonRepository.getPokemon,
+      this.pokemonRepository.getPokemon.bind(this.pokemonRepository),
       this.searchEl
     ) 
   }
